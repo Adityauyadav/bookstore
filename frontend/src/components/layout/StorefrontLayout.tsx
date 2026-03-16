@@ -10,17 +10,30 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 import { getCart } from "../../api/cart.api";
+import { useAuthStore } from "../../store/auth.store";
 
 export default function StorefrontLayout() {
   const location = useLocation();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const { data } = useQuery({
     queryKey: ["cart"],
     queryFn: getCart,
+    enabled: isAuthenticated,
   });
 
   const navItems = [
-    { name: "Home", path: "/", icon: House },
-    { name: "Books", path: "/", icon: BookOpen },
+    {
+      name: "Home",
+      path: "/",
+      icon: House,
+      isActive: (pathname: string) => pathname === "/",
+    },
+    {
+      name: "Books",
+      path: "/",
+      icon: BookOpen,
+      isActive: (pathname: string) => pathname.startsWith("/books/"),
+    },
     { name: "Cart", path: "/cart", icon: ShoppingBag, hasBadge: true },
     { name: "Orders", path: "/orders", icon: Receipt },
   ];
@@ -41,10 +54,10 @@ export default function StorefrontLayout() {
         <nav className="flex flex-1 flex-col gap-6">
           {navItems.map((item) => {
             const Icon = item.icon;
-            // Simple active state check
             const isActive =
-              location.pathname === item.path ||
-              (item.path !== "/" && location.pathname.startsWith(item.path));
+              item.isActive?.(location.pathname) ??
+              (location.pathname === item.path ||
+                (item.path !== "/" && location.pathname.startsWith(item.path)));
 
             return (
               <Link
