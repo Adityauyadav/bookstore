@@ -1,9 +1,19 @@
-import { z, ZodError} from "zod";
+import dotenv from "dotenv";
+import { z, ZodError } from "zod";
+
+dotenv.config();
 
 const schema = z.object({
-    DATABASE_URL: z.string().min(1),
-    PORT: z.string().min(1).transform(val=>parseInt(val,10)),
-    NODE_ENV: z.enum(["development", "production", "test"]),
+  DATABASE_URL: z.string().min(1),
+  PORT: z
+    .string()
+    .min(1)
+    .transform((val) => parseInt(val, 10)),
+  NODE_ENV: z.enum(["development", "production", "test"]),
+  JWT_ACCESS_SECRET: z.string().min(1),
+  JWT_REFRESH_SECRET: z.string().min(1),
+  JWT_ACCESS_EXPIRES_IN: z.string().min(1),
+  JWT_REFRESH_EXPIRES_IN: z.string().min(1),
 });
 
 let env: z.infer<typeof schema>;
@@ -14,7 +24,9 @@ try {
   if (e instanceof ZodError) {
     throw new Error(
       "Invalid environment variables:\n" +
-      e.issues.map(err => `${String(err.path[0])}: ${err.message}`).join("\n")
+        e.issues
+          .map((err) => `${String(err.path[0])}: ${err.message}`)
+          .join("\n"),
     );
   }
   throw e;
