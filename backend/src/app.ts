@@ -8,6 +8,7 @@ import logger from "./config/logger";
 import errorMiddleware from "./middleware/error.middleware";
 import { globalRateLimiter } from "./middleware/rateLimiter";
 import booksRouter from "./modules/books/books.routes";
+import cartRouter from "./modules/cart/cart.routes";
 import genresRouter from "./modules/genres/genres.routes";
 
 const app = express();
@@ -50,6 +51,7 @@ app.get("/health", (req, res) => {
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/books", booksRouter);
+app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/genres", genresRouter);
 
 app.use(errorMiddleware);
