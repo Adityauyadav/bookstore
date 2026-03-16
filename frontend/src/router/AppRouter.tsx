@@ -1,5 +1,8 @@
+import type { ReactNode } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
+import AdminLayout from "../components/layout/AdminLayout";
+import StorefrontLayout from "../components/layout/StorefrontLayout";
 import AdminBooksPage from "../pages/admin/AdminBooksPage";
 import AdminGenresPage from "../pages/admin/AdminGenresPage";
 import AdminOrdersPage from "../pages/admin/AdminOrdersPage";
@@ -20,7 +23,7 @@ import ProtectedRoute from "./ProtectedRoute";
 function PublicOnlyRoute({
   children,
 }: {
-  children: JSX.Element;
+  children: ReactNode;
 }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
@@ -35,8 +38,18 @@ export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/books/:id" element={<BookDetailPage />} />
+        <Route element={<StorefrontLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/books/:id" element={<BookDetailPage />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/orders/:id" element={<OrderDetailPage />} />
+          </Route>
+        </Route>
+
         <Route
           path="/login"
           element={
@@ -54,19 +67,14 @@ export default function AppRouter() {
           }
         />
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/orders/:id" element={<OrderDetailPage />} />
-        </Route>
-
         <Route element={<AdminRoute />}>
-          <Route path="/admin" element={<Navigate to="/admin/books" replace />} />
-          <Route path="/admin/books" element={<AdminBooksPage />} />
-          <Route path="/admin/orders" element={<AdminOrdersPage />} />
-          <Route path="/admin/users" element={<AdminUsersPage />} />
-          <Route path="/admin/genres" element={<AdminGenresPage />} />
+          <Route element={<AdminLayout />}>
+            <Route path="/admin" element={<Navigate to="/admin/books" replace />} />
+            <Route path="/admin/books" element={<AdminBooksPage />} />
+            <Route path="/admin/orders" element={<AdminOrdersPage />} />
+            <Route path="/admin/users" element={<AdminUsersPage />} />
+            <Route path="/admin/genres" element={<AdminGenresPage />} />
+          </Route>
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

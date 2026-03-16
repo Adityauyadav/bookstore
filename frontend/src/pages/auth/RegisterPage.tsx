@@ -42,7 +42,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-[#f4efe7] p-4 md:p-6">
-      <div className="mx-auto grid min-h-[calc(100vh-2rem)] max-w-7xl overflow-hidden rounded-[2rem] border border-black/10 bg-[#fbf8f2] shadow-[0_24px_80px_rgba(70,52,36,0.12)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:min-h-[calc(100vh-3rem)]">
+      <div className="mx-auto grid min-h-[calc(100vh-2rem)] max-w-7xl overflow-hidden rounded-4xl border border-black/10 bg-[#fbf8f2] shadow-[0_24px_80px_rgba(70,52,36,0.12)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:min-h-[calc(100vh-3rem)]">
         <section className="flex items-center justify-center px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
           <div className="w-full max-w-md">
             <p className="mb-4 font-sans text-xs uppercase tracking-widest text-text-muted">
@@ -143,7 +143,7 @@ export default function RegisterPage() {
           </div>
         </section>
 
-        <section className="relative hidden min-h-[28rem] overflow-hidden lg:flex">
+        <section className="relative hidden min-h-112 overflow-hidden lg:flex">
           <img
             src={authBackground}
             alt="Book pages and a reading nook"
