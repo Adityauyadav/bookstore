@@ -59,4 +59,14 @@ const authMiddleware: RequestHandler = (req, res, next) => {
   }
 };
 
+export const requireAdmin: RequestHandler = (req, res, next) => {
+  void res;
+
+  if (req.user?.role !== "ADMIN") {
+    throw new AppError("Forbidden", 403, "FORBIDDEN");
+  }
+
+  next();
+};
+
 export default authMiddleware;
