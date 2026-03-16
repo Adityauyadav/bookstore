@@ -36,3 +36,17 @@ export const cancelOrder = async (id: string) => {
 
   return response.data;
 };
+
+export const verifyPayment = async (
+  razorpayOrderId: string,
+  razorpayPaymentId: string,
+  razorpaySignature: string,
+) => {
+  const response = await api.post<ApiSuccessResponse<Order>>("/payments/verify", {
+    razorpayOrderId,
+    razorpayPaymentId,
+    razorpaySignature,
+  });
+
+  return response.data;
+};

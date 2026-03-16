@@ -2,11 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
-import {
-  getCart,
-  removeCartItem,
-  updateCartItem,
-} from "../../api/cart.api";
+import { getCart, removeCartItem, updateCartItem } from "../../api/cart.api";
 
 const formatPrice = (value: number) =>
   new Intl.NumberFormat("en-IN", {
@@ -25,13 +21,8 @@ export default function CartPage() {
   });
 
   const updateQuantityMutation = useMutation({
-    mutationFn: ({
-      bookId,
-      quantity,
-    }: {
-      bookId: string;
-      quantity: number;
-    }) => updateCartItem(bookId, quantity),
+    mutationFn: ({ bookId, quantity }: { bookId: string; quantity: number }) =>
+      updateCartItem(bookId, quantity),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
@@ -59,7 +50,7 @@ export default function CartPage() {
           {Array.from({ length: 3 }).map((_, index) => (
             <div
               key={index}
-              className="h-36 animate-pulse rounded-[1.5rem] bg-white"
+              className="h-36 animate-pulse rounded-3xl bg-white"
             />
           ))}
         </div>
@@ -70,7 +61,7 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-[2rem] border border-dashed border-black/10 bg-[#fbf8f2] px-8 py-16 text-center">
+      <div className="rounded-4xl border border-dashed border-black/10 bg-[#fbf8f2] px-8 py-16 text-center">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white">
           <ShoppingBag className="h-6 w-6 text-text-muted" />
         </div>
@@ -113,13 +104,13 @@ export default function CartPage() {
             return (
               <article
                 key={item.id}
-                className="grid gap-4 rounded-[1.5rem] border border-black/8 bg-[#fbf8f2] p-4 sm:grid-cols-[6rem_minmax(0,1fr)_auto]"
+                className="grid gap-4 rounded-3xl border border-black/8 bg-[#fbf8f2] p-4 sm:grid-cols-[6rem_minmax(0,1fr)_auto]"
               >
                 <Link to={`/books/${item.book.id}`} className="block">
                   <img
                     src={item.book.coverImageUrl}
                     alt={item.book.title}
-                    className="aspect-[3/4] w-24 rounded-[1rem] object-cover bg-[#efe6d8] transition-transform duration-200 hover:scale-[1.02]"
+                    className="aspect-3/4 w-24 rounded-2xl object-cover bg-[#efe6d8] transition-transform duration-200 hover:scale-[1.02]"
                   />
                 </Link>
 
@@ -174,9 +165,7 @@ export default function CartPage() {
                           quantity: item.quantity + 1,
                         })
                       }
-                      disabled={
-                        isUpdating || item.quantity >= item.book.stock
-                      }
+                      disabled={isUpdating || item.quantity >= item.book.stock}
                       className="rounded-full p-1 text-text-primary transition-colors hover:bg-[#f4efe7] disabled:opacity-40"
                     >
                       <Plus size={14} />
