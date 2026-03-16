@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-primary: #f5f3ee;
+  --color-bg-card: #ffffff;
+  --color-bg-outer: #e8e5df;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #5a5a5a;
+  --color-text-muted: #9a9a9a;
+  --color-accent: #cc3333;
+  --color-border: #e0ddd7;
+
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "DM Sans", sans-serif;
+}
+
+* {
+  font-family: var(--font-sans);
+}
+
+body {
+  background-color: #e8e5df;
+}
