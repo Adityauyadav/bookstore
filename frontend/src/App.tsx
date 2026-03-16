@@ -1,8 +1,12 @@
+import { BrowserRouter } from "react-router-dom";
+
+import AppRouter from "./router/AppRouter";
+
 function App() {
   return (
-    <div className="min-h-screen bg-blue-500 flex items-center justify-center">
-      <h1 className="text-4xl font-bold text-white">Bookstore</h1>
-    </div>
+    <BrowserRouter>
+      <AppRouter />
+    </BrowserRouter>
   );
 }
 

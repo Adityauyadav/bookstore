@@ -136,3 +136,8 @@ export type ApiErrorResponse = {
     message: string;
   }>;
 };
+
+export type AdminUserDetail = User & {
+  orderCount: number;
+  totalSpend: number;
+};

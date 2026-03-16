@@ -1,0 +1,38 @@
+import api from "./axios";
+import type {
+  ApiSuccessResponse,
+  Order,
+  PaginatedOrders,
+  ShippingAddress,
+} from "../types";
+
+export const placeOrder = async (shippingAddress: ShippingAddress) => {
+  const response = await api.post<ApiSuccessResponse<Order>>("/orders", {
+    shippingAddress,
+  });
+
+  return response.data;
+};
+
+export const getOrders = async (page?: number, limit?: number) => {
+  const response = await api.get<ApiSuccessResponse<PaginatedOrders>>("/orders", {
+    params: {
+      page,
+      limit,
+    },
+  });
+
+  return response.data;
+};
+
+export const getOrder = async (id: string) => {
+  const response = await api.get<ApiSuccessResponse<Order>>(`/orders/${id}`);
+
+  return response.data;
+};
+
+export const cancelOrder = async (id: string) => {
+  const response = await api.post<ApiSuccessResponse<Order>>(`/orders/${id}/cancel`);
+
+  return response.data;
+};
