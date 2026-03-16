@@ -10,7 +10,9 @@ import { globalRateLimiter } from "./middleware/rateLimiter";
 import booksRouter from "./modules/books/books.routes";
 import cartRouter from "./modules/cart/cart.routes";
 import genresRouter from "./modules/genres/genres.routes";
-import ordersRouter, { adminOrdersRouter } from "./modules/orders/orders.routes";
+import ordersRouter, {
+  adminOrdersRouter,
+} from "./modules/orders/orders.routes";
 import paymentsRouter from "./modules/payments/payments.routes";
 import usersRouter from "./modules/users/users.routes";
 
@@ -59,7 +61,7 @@ app.use("/api/v1/genres", genresRouter);
 app.use("/api/v1/orders", ordersRouter);
 app.use("/api/v1/admin/orders", adminOrdersRouter);
 app.use("/api/v1/payments", paymentsRouter);
-app.use("/api/v1/users", usersRouter);
+app.use("/api/v1/admin/users", usersRouter);
 
 app.use(errorMiddleware);
 
