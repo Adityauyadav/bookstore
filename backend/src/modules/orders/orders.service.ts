@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 
+import razorpay from "../../config/razorpay";
 import AppError from "../../lib/AppError";
 import prisma from "../../lib/prisma";
 
@@ -57,19 +58,25 @@ export const placeOrder = async (userId: string, shippingAddress: ShippingAddres
     throw new AppError("Cart is empty", 400, "CART_EMPTY");
   }
 
-  return prisma.$transaction(async (tx) => {
-    for (const item of cart.items) {
-      if (item.book.stock < item.quantity) {
-        throw new AppError("Insufficient stock", 400, "INSUFFICIENT_STOCK");
-      }
+  for (const item of cart.items) {
+    if (item.book.stock < item.quantity) {
+      throw new AppError("Insufficient stock", 400, "INSUFFICIENT_STOCK");
     }
+  }
 
-    const totalAmount = cart.items.reduce(
-      (total, item) =>
-        total.plus(new Prisma.Decimal(item.book.price).mul(item.quantity)),
-      new Prisma.Decimal(0),
-    );
+  const totalAmount = cart.items.reduce(
+    (total, item) =>
+      total.plus(new Prisma.Decimal(item.book.price).mul(item.quantity)),
+    new Prisma.Decimal(0),
+  );
 
+  const razorpayOrder = await razorpay.orders.create({
+    amount: totalAmount.mul(100).toNumber(),
+    currency: "INR",
+    receipt: `receipt_${Date.now()}`,
+  });
+
+  return prisma.$transaction(async (tx) => {
     const order = await tx.order.create({
       data: {
         userId,
@@ -90,7 +97,7 @@ export const placeOrder = async (userId: string, shippingAddress: ShippingAddres
     await tx.payment.create({
       data: {
         orderId: order.id,
-        razorpayOrderId: "",
+        razorpayOrderId: razorpayOrder.id,
         status: "PENDING",
         amount: totalAmount,
       },
@@ -115,7 +122,7 @@ export const placeOrder = async (userId: string, shippingAddress: ShippingAddres
       },
     });
 
-    return tx.order.findUniqueOrThrow({
+    const createdOrder = await tx.order.findUniqueOrThrow({
       where: {
         id: order.id,
       },
@@ -135,6 +142,11 @@ export const placeOrder = async (userId: string, shippingAddress: ShippingAddres
         payment: true,
       },
     });
+
+    return {
+      ...createdOrder,
+      razorpayOrderId: razorpayOrder.id,
+    };
   });
 };
 
