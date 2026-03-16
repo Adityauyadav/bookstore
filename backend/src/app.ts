@@ -6,6 +6,7 @@ import pinoHttp from "pino-http";
 import authRouter from "./auth/auth.routes";
 import logger from "./config/logger";
 import errorMiddleware from "./middleware/error.middleware";
+import { globalRateLimiter } from "./middleware/rateLimiter";
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use(
 app.use(cookieParser);
 app.use(express.json());
 app.use(pinoHttp({ logger }));
+app.use(globalRateLimiter);
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
