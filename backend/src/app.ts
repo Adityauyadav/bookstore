@@ -10,6 +10,7 @@ import { globalRateLimiter } from "./middleware/rateLimiter";
 import booksRouter from "./modules/books/books.routes";
 import cartRouter from "./modules/cart/cart.routes";
 import genresRouter from "./modules/genres/genres.routes";
+import ordersRouter from "./modules/orders/orders.routes";
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/books", booksRouter);
 app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/genres", genresRouter);
+app.use("/api/v1/orders", ordersRouter);
 
 app.use(errorMiddleware);
 
