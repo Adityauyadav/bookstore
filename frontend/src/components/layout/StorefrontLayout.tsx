@@ -38,7 +38,8 @@ export default function StorefrontLayout() {
     { name: "Orders", path: "/orders", icon: Receipt },
   ];
 
-  const cartItemCount = data?.data?.items?.length ?? 0;
+  const cartItemCount =
+    data?.data?.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
 
   return (
     <div className="flex min-h-screen bg-bg-outer font-sans text-text-primary">

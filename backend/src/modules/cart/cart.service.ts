@@ -8,6 +8,7 @@ const cartInclude = {
         select: {
           id: true,
           title: true,
+          author: true,
           price: true,
           coverImageUrl: true,
           stock: true,

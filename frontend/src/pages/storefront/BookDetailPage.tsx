@@ -58,8 +58,8 @@ export default function BookDetailPage() {
   if (isLoading) {
     return (
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-        <div className="aspect-[3/4] animate-pulse rounded-[2rem] bg-white" />
-        <div className="space-y-4 rounded-[2rem] bg-white p-8">
+        <div className="aspect-3/4 animate-pulse rounded-4xl bg-white" />
+        <div className="space-y-4 rounded-4xl bg-white p-8">
           <div className="h-4 w-28 animate-pulse rounded bg-[#ece4d8]" />
           <div className="h-12 w-3/4 animate-pulse rounded bg-[#ece4d8]" />
           <div className="h-5 w-1/3 animate-pulse rounded bg-[#ece4d8]" />
@@ -71,7 +71,7 @@ export default function BookDetailPage() {
 
   if (isError || !book) {
     return (
-      <div className="rounded-[2rem] border border-dashed border-black/10 bg-[#fbf8f2] px-8 py-16 text-center">
+      <div className="rounded-4xl border border-dashed border-black/10 bg-[#fbf8f2] px-8 py-16 text-center">
         <p className="font-serif text-3xl text-text-primary">
           {errorStatus === 404 ? "Book not found" : "Unable to load book"}
         </p>
@@ -101,13 +101,13 @@ export default function BookDetailPage() {
         Back to collection
       </Link>
 
-      <section className="grid gap-6 rounded-[2rem] border border-black/8 bg-[#fbf8f2] p-5 sm:p-6 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:p-8">
+      <section className="grid gap-6 rounded-4xl border border-black/8 bg-[#fbf8f2] p-5 sm:p-6 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:p-8">
         <div className="rounded-[1.75rem] bg-[#efe6d8] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]">
           <div className="mx-auto max-w-md">
             <img
               src={book.coverImageUrl}
               alt={book.title}
-              className="aspect-[3/4] w-full rounded-[1.5rem] object-cover shadow-[0_22px_50px_rgba(42,30,18,0.22)]"
+              className="aspect-3/4 w-full rounded-3xl object-cover shadow-[0_22px_50px_rgba(42,30,18,0.22)]"
             />
           </div>
         </div>

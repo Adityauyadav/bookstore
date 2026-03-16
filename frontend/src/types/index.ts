@@ -45,7 +45,10 @@ export type CartItem = {
   cartId: string;
   bookId: string;
   quantity: number;
-  book: Pick<Book, "id" | "title" | "price" | "coverImageUrl" | "stock">;
+  book: Pick<
+    Book,
+    "id" | "title" | "author" | "price" | "coverImageUrl" | "stock"
+  >;
 };
 
 export type Cart = {

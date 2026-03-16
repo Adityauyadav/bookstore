@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import AdminLayout from "../components/layout/AdminLayout";
 import StorefrontLayout from "../components/layout/StorefrontLayout";
+import { getMe, refreshToken } from "../api/auth.api";
 import AdminBooksPage from "../pages/admin/AdminBooksPage";
 import AdminGenresPage from "../pages/admin/AdminGenresPage";
 import AdminOrdersPage from "../pages/admin/AdminOrdersPage";
@@ -35,6 +37,57 @@ function PublicOnlyRoute({
 }
 
 export default function AppRouter() {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const logout = useAuthStore((state) => state.logout);
+  const [isAuthReady, setIsAuthReady] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const initializeAuth = async () => {
+      if (isAuthenticated) {
+        if (isMounted) {
+          setIsAuthReady(true);
+        }
+        return;
+      }
+
+      try {
+        const refreshResponse = await refreshToken();
+        const meResponse = await getMe();
+
+        if (isMounted) {
+          setAuth(meResponse.data, refreshResponse.data.accessToken);
+        }
+      } catch {
+        if (isMounted) {
+          logout();
+        }
+      } finally {
+        if (isMounted) {
+          setIsAuthReady(true);
+        }
+      }
+    };
+
+    void initializeAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthenticated, logout, setAuth]);
+
+  if (!isAuthReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#f5f1ea]">
+        <div className="rounded-full border border-black/10 bg-white px-5 py-3 text-sm text-text-muted shadow-sm">
+          Restoring your session...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <BrowserRouter>
       <Routes>

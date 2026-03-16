@@ -15,11 +15,34 @@ const api: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
-let refreshPromise: Promise<void> | null = null;
+let refreshPromise: Promise<string> | null = null;
 
 const refreshAccessToken = async () => {
-  await api.post("/auth/refresh");
+  const response = await api.post<{
+    success: true;
+    message: string;
+    data: { accessToken: string };
+  }>("/auth/refresh");
+
+  const { accessToken } = response.data.data;
+  const currentUser = useAuthStore.getState().user;
+
+  if (currentUser) {
+    useAuthStore.getState().setAuth(currentUser, accessToken);
+  }
+
+  return accessToken;
 };
+
+api.interceptors.request.use((config) => {
+  const accessToken = useAuthStore.getState().accessToken;
+
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  return config;
+});
 
 api.interceptors.response.use(
   (response) => response,

@@ -138,7 +138,7 @@ export default function HomePage() {
             <p className="font-sans text-[0.72rem] uppercase tracking-[0.34em] text-text-muted">
               Curated Storefront
             </p>
-            <h1 className="mt-3 max-w-3xl font-serif text-4xl leading-[1] tracking-tight text-text-primary sm:text-5xl xl:text-6xl">
+            <h1 className="mt-3 max-w-3xl font-serif text-4xl leading-none tracking-tight text-text-primary sm:text-5xl xl:text-6xl">
               Your next read is waiting.
             </h1>
             <p className="mt-4 max-w-xl text-sm leading-6 text-text-muted sm:text-base">
@@ -205,7 +205,7 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-[minmax(0,1.6fr)_auto] lg:min-w-[38rem]">
+          <div className="grid gap-3 sm:grid-cols-[minmax(0,1.6fr)_auto] lg:min-w-152">
             <label className="relative block">
               <span className="sr-only">Search books</span>
               <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
@@ -348,7 +348,7 @@ export default function HomePage() {
             {Array.from({ length: 10 }).map((_, index) => (
               <div
                 key={index}
-                className="h-[20rem] animate-pulse rounded-2xl bg-white/60"
+                className="h-80 animate-pulse rounded-2xl bg-white/60"
               />
             ))}
           </div>
@@ -396,7 +396,7 @@ export default function HomePage() {
             </div>
           </>
         ) : (
-          <div className="rounded-[1.5rem] border border-dashed border-black/12 bg-white px-6 py-12 text-center">
+          <div className="rounded-3xl border border-dashed border-black/12 bg-white px-6 py-12 text-center">
             <p className="font-serif text-2xl text-text-primary">
               No books found
             </p>
