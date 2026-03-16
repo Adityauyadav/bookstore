@@ -259,3 +259,156 @@ export const cancelOrder = async (userId: string, orderId: string) => {
     });
   });
 };
+
+export const getAdminOrders = async (
+  page: number,
+  limit: number,
+  status?: "PENDING" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED",
+) => {
+  const where: Prisma.OrderWhereInput = {};
+
+  if (status) {
+    where.status = status;
+  }
+
+  const [orders, total] = await prisma.$transaction([
+    prisma.order.findMany({
+      where,
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        _count: {
+          select: {
+            items: true,
+          },
+        },
+        payment: {
+          select: {
+            status: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    prisma.order.count({ where }),
+  ]);
+
+  return {
+    orders: orders.map((order) => ({
+      ...order,
+      itemCount: order._count.items,
+      paymentStatus: order.payment?.status ?? "PENDING",
+    })),
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
+};
+
+export const getAdminOrderById = async (orderId: string) => {
+  const order = await getOrderWithDetails(orderId);
+
+  if (!order) {
+    throw new AppError("Order not found", 404, "ORDER_NOT_FOUND");
+  }
+
+  return prisma.order.findUniqueOrThrow({
+    where: {
+      id: orderId,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
+      },
+      items: {
+        include: {
+          book: {
+            select: {
+              id: true,
+              title: true,
+              author: true,
+              coverImageUrl: true,
+              stock: true,
+            },
+          },
+        },
+      },
+      payment: true,
+    },
+  });
+};
+
+export const updateOrderStatus = async (
+  orderId: string,
+  status: "CONFIRMED" | "SHIPPED" | "DELIVERED",
+) => {
+  const order = await prisma.order.findUnique({
+    where: {
+      id: orderId,
+    },
+  });
+
+  if (!order) {
+    throw new AppError("Order not found", 404, "ORDER_NOT_FOUND");
+  }
+
+  const validTransitions: Record<string, string[]> = {
+    CONFIRMED: ["SHIPPED"],
+    SHIPPED: ["DELIVERED"],
+  };
+
+  if (!validTransitions[order.status]?.includes(status)) {
+    throw new AppError(
+      "Invalid status transition",
+      400,
+      "INVALID_STATUS_TRANSITION",
+    );
+  }
+
+  return prisma.order.update({
+    where: {
+      id: orderId,
+    },
+    data: {
+      status,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
+      },
+      items: {
+        include: {
+          book: {
+            select: {
+              id: true,
+              title: true,
+              author: true,
+              coverImageUrl: true,
+              stock: true,
+            },
+          },
+        },
+      },
+      payment: true,
+    },
+  });
+};
