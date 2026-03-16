@@ -1,5 +1,5 @@
 import cors from "cors";
-import express from "express";
+import express, { type RequestHandler } from "express";
 import helmet from "helmet";
 import pinoHttp from "pino-http";
 
@@ -9,8 +9,34 @@ import errorMiddleware from "./middleware/error.middleware";
 
 const app = express();
 
+const cookieParser: RequestHandler = (req, res, next) => {
+  void res;
+
+  req.cookies = Object.fromEntries(
+    (req.headers.cookie ?? "")
+      .split(";")
+      .map((cookie) => cookie.trim())
+      .filter(Boolean)
+      .map((cookie) => {
+        const separatorIndex = cookie.indexOf("=");
+        const key = cookie.slice(0, separatorIndex);
+        const value = cookie.slice(separatorIndex + 1);
+
+        return [key, decodeURIComponent(value)];
+      }),
+  );
+
+  next();
+};
+
 app.use(helmet());
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  }),
+);
+app.use(cookieParser);
 app.use(express.json());
 app.use(pinoHttp({ logger }));
 

@@ -50,6 +50,18 @@ const getRefreshTokenExpiry = () => {
   return expiresAt;
 };
 
+const getSafeUser = (user: {
+  passwordHash: string;
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: Date;
+}) => {
+  const { passwordHash: _passwordHash, ...safeUser } = user;
+  return safeUser;
+};
+
 const storeRefreshToken = async (userId: string, refreshToken: string) => {
   await prisma.refreshToken.deleteMany({
     where: {
@@ -96,10 +108,8 @@ export const registerUser = async (data: RegisterUserInput) => {
 
   await storeRefreshToken(user.id, refreshToken);
 
-  const { passwordHash: _passwordHash, ...safeUser } = user;
-
   return {
-    user: safeUser,
+    user: getSafeUser(user),
     accessToken,
     refreshToken,
   };
@@ -127,11 +137,83 @@ export const loginUser = async (data: LoginUserInput) => {
 
   await storeRefreshToken(user.id, refreshToken);
 
-  const { passwordHash: _passwordHash, ...safeUser } = user;
-
   return {
-    user: safeUser,
+    user: getSafeUser(user),
     accessToken,
     refreshToken,
   };
+};
+
+export const refreshAccessToken = async (token: string) => {
+  const tokenHash = hashRefreshToken(token);
+
+  const storedToken = await prisma.refreshToken.findFirst({
+    where: {
+      tokenHash,
+    },
+    include: {
+      user: true,
+    },
+  });
+
+  if (!storedToken) {
+    throw new AppError("Invalid refresh token", 401, "INVALID_REFRESH_TOKEN");
+  }
+
+  if (storedToken.expiresAt < new Date()) {
+    await prisma.refreshToken.delete({
+      where: {
+        id: storedToken.id,
+      },
+    });
+    throw new AppError("Invalid refresh token", 401, "INVALID_REFRESH_TOKEN");
+  }
+
+  await prisma.refreshToken.delete({
+    where: {
+      id: storedToken.id,
+    },
+  });
+
+  const newRefreshToken = generateRefreshToken();
+  await storeRefreshToken(storedToken.userId, newRefreshToken);
+
+  return {
+    accessToken: generateAccessToken(storedToken.user),
+    refreshToken: newRefreshToken,
+  };
+};
+
+export const logoutUser = async (token: string) => {
+  const tokenHash = hashRefreshToken(token);
+
+  const storedToken = await prisma.refreshToken.findFirst({
+    where: {
+      tokenHash,
+    },
+  });
+
+  if (!storedToken) {
+    throw new AppError("Invalid refresh token", 401, "INVALID_REFRESH_TOKEN");
+  }
+
+  await prisma.refreshToken.delete({
+    where: {
+      id: storedToken.id,
+    },
+  });
+};
+
+export const getMe = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new AppError("User not found", 404, "USER_NOT_FOUND");
+  }
+
+  return getSafeUser(user);
 };
