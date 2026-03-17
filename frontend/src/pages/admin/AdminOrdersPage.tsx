@@ -95,53 +95,55 @@ export default function AdminOrdersPage() {
         </div>
 
         <div className="mt-5 space-y-4">
-          {isLoading ? (
-            Array.from({ length: 5 }).map((_, index) => (
-              <div
-                key={index}
-                className="h-24 animate-pulse rounded-[1.25rem] bg-white"
-              />
-            ))
-          ) : (
-            orders.map((order) => (
-              <button
-                key={order.id}
-                type="button"
-                onClick={() => {
-                  setSelectedOrderId(order.id);
-                  setError("");
-                }}
-                className="grid w-full gap-4 rounded-[1.25rem] border border-black/8 bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:border-black/15 md:grid-cols-[minmax(0,1fr)_0.7fr_0.8fr]"
-              >
-                <div>
-                  <p className="font-serif text-2xl text-text-primary">
-                    #{order.id.slice(0, 8)}
-                  </p>
-                  <p className="mt-1 text-sm text-text-muted">
-                    {order.user?.name ?? "Customer"} · {order.user?.email ?? ""}
-                  </p>
-                </div>
-                <div>
-                  <span
-                    className={`inline-flex rounded-full px-3 py-1 text-xs uppercase tracking-[0.16em] ${ORDER_STATUS_STYLES[order.status]}`}
-                  >
-                    {order.status}
-                  </span>
-                  <p className="mt-2 text-sm text-text-muted">
-                    Items {order.itemCount ?? order.items.length}
-                  </p>
-                </div>
-                <div className="md:text-right">
-                  <p className="font-serif text-2xl text-[#8f2d22]">
-                    {formatPrice(Number(order.totalAmount))}
-                  </p>
-                  <p className="mt-1 text-sm text-text-muted">
-                    Payment {order.paymentStatus ?? order.payment?.status ?? "PENDING"}
-                  </p>
-                </div>
-              </button>
-            ))
-          )}
+          {isLoading
+            ? Array.from({ length: 5 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="h-24 animate-pulse rounded-[1.25rem] bg-white"
+                />
+              ))
+            : orders.map((order) => (
+                <button
+                  key={order.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedOrderId(order.id);
+                    setError("");
+                  }}
+                  className="grid w-full gap-4 rounded-[1.25rem] border border-black/8 bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:border-black/15 md:grid-cols-[minmax(0,1fr)_0.7fr_0.8fr]"
+                >
+                  <div>
+                    <p className="font-serif text-2xl text-text-primary">
+                      #{order.id.slice(0, 8)}
+                    </p>
+                    <p className="mt-1 text-sm text-text-muted">
+                      {order.user?.name ?? "Customer"} ·{" "}
+                      {order.user?.email ?? ""}
+                    </p>
+                  </div>
+                  <div>
+                    <span
+                      className={`inline-flex rounded-full px-3 py-1 text-xs uppercase tracking-[0.16em] ${ORDER_STATUS_STYLES[order.status]}`}
+                    >
+                      {order.status}
+                    </span>
+                    <p className="mt-2 text-sm text-text-muted">
+                      Items {order.itemCount ?? order.items.length}
+                    </p>
+                  </div>
+                  <div className="md:text-right">
+                    <p className="font-serif text-2xl text-[#8f2d22]">
+                      {formatPrice(Number(order.totalAmount))}
+                    </p>
+                    <p className="mt-1 text-sm text-text-muted">
+                      Payment{" "}
+                      {order.paymentStatus ??
+                        order.payment?.status ??
+                        "PENDING"}
+                    </p>
+                  </div>
+                </button>
+              ))}
         </div>
 
         <div className="mt-5 flex items-center justify-between border-t border-black/8 pt-5">
@@ -185,6 +187,33 @@ export default function AdminOrdersPage() {
               {selectedOrder.user?.email ?? ""}
             </p>
 
+            <div className="mt-5 rounded-[1.1rem] bg-white p-4">
+              <p className="mb-2 text-[0.68rem] uppercase tracking-[0.2em] text-text-muted">
+                Shipping Address
+              </p>
+              {selectedOrder.shippingAddress ? (
+                <div className="text-sm text-text-primary">
+                  <p className="font-medium">
+                    {selectedOrder.shippingAddress.name}
+                  </p>
+                  <p>{selectedOrder.shippingAddress.line1}</p>
+                  {selectedOrder.shippingAddress.line2 && (
+                    <p>{selectedOrder.shippingAddress.line2}</p>
+                  )}
+                  <p>
+                    {selectedOrder.shippingAddress.city},{" "}
+                    {selectedOrder.shippingAddress.state}{" "}
+                    {selectedOrder.shippingAddress.pincode}
+                  </p>
+                  <p className="mt-1 text-text-muted">
+                    Phone: {selectedOrder.shippingAddress.phone}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-text-muted">No address provided</p>
+              )}
+            </div>
+
             <div className="mt-5 space-y-3">
               {selectedOrder.items.map((item) => (
                 <div
@@ -195,7 +224,8 @@ export default function AdminOrdersPage() {
                     {item.book.title}
                   </p>
                   <p className="mt-1 text-text-muted">
-                    Qty {item.quantity} · {formatPrice(Number(item.priceAtPurchase))}
+                    Qty {item.quantity} ·{" "}
+                    {formatPrice(Number(item.priceAtPurchase))}
                   </p>
                 </div>
               ))}
@@ -212,22 +242,40 @@ export default function AdminOrdersPage() {
               ) : null}
               <div className="mt-3 flex gap-2">
                 {(["CONFIRMED", "SHIPPED", "DELIVERED"] as OrderStatus[]).map(
-                  (nextStatus) => (
-                    <button
-                      key={nextStatus}
-                      type="button"
-                      onClick={() =>
-                        updateStatusMutation.mutate({
-                          id: selectedOrder.id,
-                          nextStatus,
-                        })
-                      }
-                      disabled={updateStatusMutation.isPending}
-                      className="rounded-full border border-black/10 bg-[#f8f4ee] px-3 py-2 text-xs text-text-primary disabled:opacity-50"
-                    >
-                      {nextStatus}
-                    </button>
-                  ),
+                  (nextStatus) => {
+                    const isCurrent = selectedOrder.status === nextStatus;
+                    const isStatusSet = [
+                      "CONFIRMED",
+                      "SHIPPED",
+                      "DELIVERED",
+                    ].includes(selectedOrder.status);
+
+                    return (
+                      <button
+                        key={nextStatus}
+                        type="button"
+                        onClick={() =>
+                          updateStatusMutation.mutate({
+                            id: selectedOrder.id,
+                            nextStatus,
+                          })
+                        }
+                        disabled={updateStatusMutation.isPending || isCurrent}
+                        className={`rounded-full border px-3 py-2 text-xs transition-all ${
+                          isCurrent
+                            ? "border-[#1d1a17] bg-[#1d1a17] text-white"
+                            : "border-black/10 bg-[#f8f4ee] text-text-primary hover:bg-[#eae4d9]"
+                        } ${
+                          updateStatusMutation.isPending ||
+                          (isStatusSet && !isCurrent)
+                            ? "opacity-40"
+                            : ""
+                        }`}
+                      >
+                        {nextStatus}
+                      </button>
+                    );
+                  },
                 )}
               </div>
             </div>
