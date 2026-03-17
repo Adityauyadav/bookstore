@@ -21,7 +21,7 @@ export const uploadImage = async (file: MulterFileLike) => {
       {
         folder: "bookstore/books",
       },
-      (error, uploadResult) => {
+      (error: any, uploadResult: any) => {
         if (error) {
           reject(error);
           return;
