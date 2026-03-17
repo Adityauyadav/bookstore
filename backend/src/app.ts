@@ -48,7 +48,7 @@ app.use(
 app.use(cookieParser);
 app.use(express.json());
 app.use(pinoHttp({ logger }));
-app.use(globalRateLimiter);
+// app.use(globalRateLimiter); // Disabled for now
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
