@@ -223,7 +223,7 @@ export default function HomePage() {
       ) : null}
 
       <section className="overflow-hidden rounded-3xl border border-black/10 bg-[#fbf8f2]">
-        <div className="grid gap-5 px-5 py-7 sm:px-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:px-8 lg:py-8">
+        <div className="px-5 py-7 sm:px-6 lg:px-8 lg:py-8">
           <div className="max-w-2xl">
             <p className="font-sans text-[0.72rem] uppercase tracking-[0.34em] text-text-muted">
               Curated Storefront
@@ -243,39 +243,6 @@ export default function HomePage() {
               Browse all books
               <ArrowRight size={16} />
             </button>
-          </div>
-
-          <div className="grid gap-3 self-end sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-            <div className="rounded-[1.1rem] border border-black/8 bg-white px-4 py-4">
-              <p className="text-[0.68rem] uppercase tracking-[0.24em] text-text-muted">
-                Current filters
-              </p>
-              <p className="mt-2 font-serif text-[1.45rem] text-text-primary">
-                {selectedGenre
-                  ? (genres.find((genre) => genre.slug === selectedGenre)
-                      ?.name ?? "Selected")
-                  : "All genres"}
-              </p>
-              <p className="mt-2 text-sm leading-6 text-text-muted">
-                {minPrice || maxPrice
-                  ? `${minPrice ? formatPrice(Number(minPrice)) : "Any"} to ${
-                      maxPrice ? formatPrice(Number(maxPrice)) : "Any"
-                    }`
-                  : "Any price range"}
-              </p>
-            </div>
-
-            <div className="rounded-[1.1rem] border border-[#8f2d22]/10 bg-[#f8ece8] px-4 py-4">
-              <p className="text-[0.68rem] uppercase tracking-[0.24em] text-[#8f2d22]/70">
-                Shelf count
-              </p>
-              <p className="mt-2 font-serif text-[1.45rem] text-[#8f2d22]">
-                {filteredBooks.length}
-              </p>
-              <p className="mt-2 text-sm leading-6 text-[#8f2d22]/80">
-                Titles available across the current search and filter set.
-              </p>
-            </div>
           </div>
         </div>
       </section>
