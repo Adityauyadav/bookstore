@@ -67,7 +67,7 @@ export default function OrdersPage() {
         </p>
         <Link
           to="/"
-          className="mt-6 inline-flex items-center rounded-full bg-[#1d1a17] px-5 py-3 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-black"
+          className="mt-6 inline-flex items-center rounded-full bg-[#D84C35] px-5 py-3 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-[#b83a1f] shadow-md"
         >
           Browse books
         </Link>
@@ -132,7 +132,7 @@ export default function OrdersPage() {
               </p>
               <Link
                 to={`/orders/${order.id}`}
-                className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#1d1a17] px-4 py-2 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-black"
+                className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#D84C35] px-4 py-2 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-[#b83a1f] shadow-md"
               >
                 View
                 <ArrowRight size={15} />

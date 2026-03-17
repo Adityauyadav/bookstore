@@ -109,7 +109,7 @@ export default function BookDetailPage() {
         </p>
         <Link
           to="/"
-          className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#1d1a17] px-5 py-3 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-black"
+          className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#D84C35] px-5 py-3 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-[#b83a1f] shadow-md"
         >
           <ArrowLeft size={16} />
           Back to books
@@ -181,7 +181,7 @@ export default function BookDetailPage() {
               className={`inline-flex items-center justify-center gap-3 rounded-full px-8 py-3.5 text-sm font-medium text-white transition-all disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-55 shadow-lg ${
                 isInCart
                   ? "bg-emerald-700 hover:bg-emerald-800"
-                  : "bg-[#1c1c1e] hover:-translate-y-0.5 hover:bg-black hover:shadow-xl"
+                  : "bg-[#D84C35] hover:-translate-y-0.5 hover:bg-[#b83a1f] hover:shadow-xl"
               }`}
             >
               Add to cart

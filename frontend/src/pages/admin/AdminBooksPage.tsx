@@ -412,7 +412,7 @@ export default function AdminBooksPage() {
             type="button"
             onClick={() => saveMutation.mutate()}
             disabled={saveMutation.isPending}
-            className="inline-flex w-full items-center justify-center rounded-full bg-[#1d1a17] px-5 py-3 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-black disabled:translate-y-0 disabled:opacity-60"
+            className="inline-flex w-full items-center justify-center rounded-full bg-[#D84C35] px-5 py-3 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-[#b83a1f] disabled:translate-y-0 disabled:opacity-60 shadow-md"
           >
             {saveMutation.isPending
               ? "Saving..."

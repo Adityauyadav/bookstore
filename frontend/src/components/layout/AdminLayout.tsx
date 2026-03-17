@@ -133,8 +133,8 @@ export default function AdminLayout() {
                   to={item.path}
                   className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition-all duration-200 ${
                     isActive
-                      ? "bg-[#1d1a17] text-white shadow-[0_12px_28px_rgba(29,26,23,0.14)]"
-                      : "text-text-muted hover:bg-white hover:text-text-primary"
+                      ? "bg-[#D84C35] text-white shadow-[0_12px_28px_rgba(216,76,53,0.25)]"
+                      : "text-text-muted hover:bg-white hover:text-[#D84C35]"
                   }`}
                 >
                   <Icon size={18} strokeWidth={isActive ? 2.4 : 2} />

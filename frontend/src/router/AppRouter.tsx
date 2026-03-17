@@ -15,6 +15,7 @@ import RegisterPage from "../pages/auth/RegisterPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import BookDetailPage from "../pages/storefront/BookDetailPage";
 import CartPage from "../pages/storefront/CartPage";
+import CataloguePage from "../pages/storefront/CataloguePage";
 import CheckoutPage from "../pages/storefront/CheckoutPage";
 import HomePage from "../pages/storefront/HomePage";
 import OrderDetailPage from "../pages/storefront/OrderDetailPage";
@@ -23,11 +24,7 @@ import { useAuthStore } from "../store/auth.store";
 import AdminRoute from "./AdminRoute";
 import ProtectedRoute from "./ProtectedRoute";
 
-function PublicOnlyRoute({
-  children,
-}: {
-  children: ReactNode;
-}) {
+function PublicOnlyRoute({ children }: { children: ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   if (isAuthenticated) {
@@ -94,6 +91,7 @@ export default function AppRouter() {
       <Routes>
         <Route element={<StorefrontLayout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/catalogue" element={<CataloguePage />} />
           <Route path="/books/:id" element={<BookDetailPage />} />
 
           <Route element={<ProtectedRoute />}>

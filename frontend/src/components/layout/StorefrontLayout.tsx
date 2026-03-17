@@ -6,12 +6,11 @@ import {
   Search,
   ShoppingBag,
   User,
+  Book,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-
-import logoUrl from "../../assets/logo.png";
 
 import { logout as logoutApi } from "../../api/auth.api";
 import { getCart } from "../../api/cart.api";
@@ -40,8 +39,13 @@ export default function StorefrontLayout() {
       icon: House,
       isActive: (pathname: string) => pathname === "/",
     },
+    {
+      name: "Catalogue",
+      path: "/catalogue",
+      icon: Book,
+      isActive: (pathname: string) => pathname === "/catalogue",
+    },
     { name: "Cart", path: "/cart", icon: ShoppingBag, hasBadge: true },
-    { name: "Orders", path: "/orders", icon: Receipt },
   ];
 
   const cartItemCount =
@@ -97,22 +101,27 @@ export default function StorefrontLayout() {
 
   const handleTopSearchChange = (value: string) => {
     setTopSearch(value);
+  };
 
-    const nextParams = new URLSearchParams(location.search);
+  const handleTopSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const value = topSearch;
+      const nextParams = new URLSearchParams(location.search);
 
-    if (value) {
-      nextParams.set("q", value);
-    } else {
-      nextParams.delete("q");
+      if (value) {
+        nextParams.set("q", value);
+      } else {
+        nextParams.delete("q");
+      }
+
+      navigate(
+        {
+          pathname: "/catalogue",
+          search: nextParams.toString() ? `?${nextParams.toString()}` : "",
+        },
+        { replace: location.pathname === "/catalogue" },
+      );
     }
-
-    navigate(
-      {
-        pathname: "/",
-        search: nextParams.toString() ? `?${nextParams.toString()}` : "",
-      },
-      { replace: location.pathname === "/" },
-    );
   };
 
   return (
@@ -140,8 +149,8 @@ export default function StorefrontLayout() {
                 to={item.path}
                 className={`relative flex h-10 w-10 md:h-12 md:w-12 cursor-pointer items-center justify-center rounded-xl md:rounded-2xl transition-all duration-200 ${
                   isActive
-                    ? "bg-text-primary text-white shadow-lg shadow-black/10"
-                    : "text-text-muted hover:bg-bg-outer hover:text-text-primary"
+                    ? "bg-[#D84C35] text-white shadow-lg shadow-[#D84C35]/25"
+                    : "text-text-muted hover:bg-bg-outer hover:text-[#D84C35]"
                 }`}
                 title={item.name}
               >
@@ -176,11 +185,9 @@ export default function StorefrontLayout() {
               <span className="hidden md:block h-px w-8 bg-black/10" />
             </div>
             <Link to="/" className="mt-1 md:mt-2 flex justify-center">
-              <img
-                src={logoUrl}
-                alt="BucketList Books"
-                className="h-7 md:h-10 w-auto object-contain"
-              />
+              <span className="font-sans text-lg md:text-2xl font-semibold tracking-tight text-text-primary hover:opacity-75 transition-opacity">
+                Bucketlist bookstore
+              </span>
             </Link>
           </div>
 
@@ -196,7 +203,8 @@ export default function StorefrontLayout() {
                 type="text"
                 value={topSearch}
                 onChange={(event) => handleTopSearchChange(event.target.value)}
-                placeholder="Search books..."
+                onKeyDown={handleTopSearchKeyDown}
+                placeholder="Search books... (press Enter)"
                 className="h-11 w-full rounded-full border border-black/10 bg-white/85 pl-11 pr-4 text-sm text-text-primary outline-none transition-colors duration-150 placeholder:text-text-muted/70 focus:border-black/20 focus:bg-white"
               />
             </label>
@@ -204,7 +212,7 @@ export default function StorefrontLayout() {
             {user?.role === "ADMIN" ? (
               <Link
                 to="/admin"
-                className="hidden md:inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border border-black/10 bg-[#f8f4ee] px-4 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
+                className="hidden md:inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border border-black/10 bg-[#F5F3EE] px-4 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
               >
                 <LayoutDashboard size={16} />
                 Admin
@@ -249,7 +257,7 @@ export default function StorefrontLayout() {
                       <Link
                         to="/orders"
                         onClick={() => setIsProfileOpen(false)}
-                        className="mt-5 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-black/10 bg-[#f8f4ee] px-4 py-3 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
+                        className="mt-5 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-black/10 bg-[#F5F3EE] px-4 py-3 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
                       >
                         <Receipt size={16} />
                         My Orders
@@ -259,7 +267,7 @@ export default function StorefrontLayout() {
                         <Link
                           to="/admin"
                           onClick={() => setIsProfileOpen(false)}
-                          className="mt-3 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-black/10 bg-[#f8f4ee] px-4 py-3 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
+                          className="mt-3 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-black/10 bg-[#F5F3EE] px-4 py-3 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
                         >
                           <LayoutDashboard size={16} />
                           Open Admin Dashboard
@@ -270,7 +278,7 @@ export default function StorefrontLayout() {
                         type="button"
                         onClick={handleLogout}
                         disabled={isLoggingOut}
-                        className="mt-3 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-[#1d1a17] px-4 py-3 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-black disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
+                        className="mt-3 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-[#D84C35] px-4 py-3 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-[#b83a1f] disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60 shadow-md"
                       >
                         <LogOut size={16} />
                         {isLoggingOut ? "Logging out..." : "Logout"}
@@ -292,14 +300,14 @@ export default function StorefrontLayout() {
                         <Link
                           to="/login"
                           onClick={() => setIsProfileOpen(false)}
-                          className="inline-flex flex-1 cursor-pointer items-center justify-center rounded-full bg-[#1d1a17] px-4 py-3 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-black"
+                          className="inline-flex flex-1 cursor-pointer items-center justify-center rounded-full bg-[#D84C35] px-4 py-3 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-[#b83a1f] shadow-md"
                         >
                           Login
                         </Link>
                         <Link
                           to="/register"
                           onClick={() => setIsProfileOpen(false)}
-                          className="inline-flex flex-1 cursor-pointer items-center justify-center rounded-full border border-black/10 bg-[#f8f4ee] px-4 py-3 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
+                          className="inline-flex flex-1 cursor-pointer items-center justify-center rounded-full border border-black/10 bg-[#F5F3EE] px-4 py-3 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
                         >
                           Register
                         </Link>

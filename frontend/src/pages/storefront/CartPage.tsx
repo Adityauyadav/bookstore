@@ -74,7 +74,7 @@ export default function CartPage() {
         </p>
         <Link
           to="/"
-          className="mt-6 inline-flex items-center rounded-full bg-[#1d1a17] px-5 py-3 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-black"
+          className="mt-6 inline-flex items-center rounded-full bg-[#D84C35] px-5 py-3 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-[#b83a1f] shadow-md"
         >
           Browse books
         </Link>
@@ -206,7 +206,7 @@ export default function CartPage() {
           <button
             type="button"
             onClick={() => navigate("/checkout")}
-            className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#1d1a17] px-5 py-3 text-sm font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-black"
+            className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#D84C35] px-5 py-3 text-sm font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-[#b83a1f] shadow-md"
           >
             Proceed to Checkout
           </button>

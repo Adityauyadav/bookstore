@@ -226,7 +226,7 @@ export default function CheckoutPage() {
         </p>
         <Link
           to="/"
-          className="mt-6 inline-flex items-center rounded-full bg-[#1d1a17] px-5 py-3 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-black"
+          className="mt-6 inline-flex items-center rounded-full bg-[#D84C35] px-5 py-3 text-sm text-white transition-all hover:-translate-y-0.5 hover:bg-[#b83a1f] shadow-md"
         >
           Back to storefront
         </Link>
@@ -315,7 +315,7 @@ export default function CheckoutPage() {
                   placeOrderMutation.isPending ||
                   verifyPaymentMutation.isPending
                 }
-                className="inline-flex w-full items-center justify-center rounded-full bg-[#1d1a17] px-5 py-3 text-sm font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-black disabled:translate-y-0 disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center rounded-full bg-[#D84C35] px-5 py-3 text-sm font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-[#b83a1f] disabled:translate-y-0 disabled:opacity-60 shadow-md"
               >
                 {placeOrderMutation.isPending || verifyPaymentMutation.isPending
                   ? "Processing..."

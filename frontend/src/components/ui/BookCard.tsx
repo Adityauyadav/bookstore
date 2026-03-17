@@ -1,4 +1,4 @@
-import { ArrowRight, ShoppingBag } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 import type { Book } from "../../types";
@@ -41,40 +41,52 @@ export default function BookCard({
           handleOpenBook();
         }
       }}
-      className="group flex h-full w-full sm:max-w-48 cursor-pointer flex-col overflow-hidden bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(42,30,18,0.08)] focus:outline-none focus:ring-2 focus:ring-black/15"
+      className="group flex h-full w-full cursor-pointer flex-col focus:outline-none"
     >
-      <div className="relative block overflow-hidden bg-[#efe6d8]">
+      <div className="relative block overflow-hidden bg-[#f4efe7] shadow-sm">
         <img
           src={book.coverImageUrl}
           alt={book.title}
-          className="aspect-[4/4.7] h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          className="aspect-2/3 object-cover w-full transition-transform duration-500 group-hover:scale-[1.05]"
         />
+        {isOutOfStock && (
+          <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px] flex items-center justify-center">
+            <span className="bg-black/80 text-white px-2 py-1 text-[10px] font-semibold uppercase tracking-wider rounded-sm">
+              Out of stock
+            </span>
+          </div>
+        )}
       </div>
 
-      <div className="flex flex-1 flex-col p-2.25">
+      <div className="flex flex-1 flex-col mt-2.5">
         <div className="flex-1">
+          <p className="mb-0.5 text-[0.62rem] font-medium uppercase tracking-wider text-text-muted">
+            {book.genre?.name || "Uncategorized"}
+          </p>
+
           <Link
             to={`/books/${book.id}`}
-            className="inline-flex items-start gap-1.5 text-text-primary transition-colors hover:text-black"
+            className="block text-text-primary transition-colors hover:text-black"
           >
-            <h3 className="line-clamp-2 min-h-10 font-serif text-[0.96rem] leading-tight">
+            <h3
+              title={book.title}
+              className="font-serif text-[0.95rem] tracking-tight leading-snug group-hover:underline decoration-1 underline-offset-2 truncate"
+            >
               {book.title}
             </h3>
-            <ArrowRight
-              size={13}
-              className="mt-1 shrink-0 opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
-            />
           </Link>
 
-          <p className="mt-0.5 text-[0.64rem] text-text-muted">{book.author}</p>
+          <p
+            className="mt-0.5 text-[11px] text-text-muted line-clamp-1"
+            title={book.author}
+          >
+            {book.author}
+          </p>
         </div>
 
-        <div className="mt-1.5 flex items-end justify-between gap-1.5">
-          <div>
-            <p className="text-[0.58rem] uppercase tracking-wider text-text-muted">
-              Price
-            </p>
-            <p className="mt-0.5 font-serif text-[0.88rem] font-medium text-text-primary">
+        <div className="mt-2 flex items-end justify-between gap-2">
+          <div className="flex flex-col">
+            <p className="font-serif text-[1rem] tracking-tight font-medium text-text-primary leading-none">
               {formatPrice(book.price)}
             </p>
           </div>
@@ -86,18 +98,14 @@ export default function BookCard({
               onAddToCart?.(book);
             }}
             disabled={!onAddToCart || isAddingToCart || isOutOfStock}
-            className={`inline-flex items-center gap-1 rounded-full px-2 py-1.25 text-[0.62rem] font-medium text-white transition-all duration-200 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-55 ${
+            className={`inline-flex items-center justify-center shrink-0 h-7 w-7 rounded-full transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${
               isInCart
-                ? "bg-emerald-700 hover:bg-emerald-800"
-                : "bg-black hover:-translate-y-0.5 hover:shadow-lg"
+                ? "bg-emerald-700 text-white hover:bg-emerald-800"
+                : "bg-[#f4efe7] text-text-primary hover:bg-[#D84C35] hover:text-white"
             }`}
+            title={isInCart ? "In cart" : "Add to cart"}
           >
-            <ShoppingBag size={14} />
-            {isAddingToCart
-              ? "Adding..."
-              : isInCart
-                ? "Added to cart"
-                : "Add to cart"}
+            <ShoppingBag size={13} />
           </button>
         </div>
       </div>

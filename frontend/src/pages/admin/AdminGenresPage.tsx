@@ -72,7 +72,7 @@ export default function AdminGenresPage() {
           type="button"
           onClick={() => createMutation.mutate()}
           disabled={createMutation.isPending || !name.trim()}
-          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#1d1a17] px-4 py-3 text-sm text-white disabled:opacity-60"
+          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#D84C35] px-4 py-3 text-sm text-white disabled:opacity-60 shadow-md"
         >
           <Plus size={16} />
           {createMutation.isPending ? "Creating..." : "Add genre"}

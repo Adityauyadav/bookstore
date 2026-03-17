@@ -125,7 +125,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={mutation.isPending}
-                className="inline-flex w-full items-center justify-center rounded-full bg-text-primary px-5 py-3.5 text-sm font-medium tracking-wide text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-black hover:shadow-lg disabled:translate-y-0 disabled:opacity-70 disabled:shadow-none"
+                className="inline-flex w-full items-center justify-center rounded-full bg-[#D84C35] px-5 py-3.5 text-sm font-medium tracking-wide text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#b83a1f] hover:shadow-lg disabled:translate-y-0 disabled:opacity-70 disabled:shadow-none shadow-md"
               >
                 {mutation.isPending ? "Creating account..." : "Create account"}
               </button>
