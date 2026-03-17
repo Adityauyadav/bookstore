@@ -3,8 +3,10 @@ import {
   LayoutDashboard,
   Layers3,
   LogOut,
+  Menu,
   Receipt,
   Users,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -56,12 +58,14 @@ export default function AdminLayout() {
   const user = useAuthStore((state) => state.user);
   const logoutStore = useAuthStore((state) => state.logout);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const currentNavItem =
     navItems.find((item) =>
-      item.exact ? location.pathname === item.path : location.pathname.startsWith(item.path),
-    ) ??
-    navItems[0];
+      item.exact
+        ? location.pathname === item.path
+        : location.pathname.startsWith(item.path),
+    ) ?? navItems[0];
 
   const handleLogout = async () => {
     if (isLoggingOut) {
@@ -82,17 +86,39 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-[#f5f1ea] text-text-primary">
+    <div className="h-screen overflow-hidden bg-[#f5f1ea] text-text-primary relative">
       <div className="flex h-screen">
-        <aside className="sticky top-0 flex h-screen w-[220px] flex-col border-r border-black/10 bg-[#fbf8f2] px-6 py-8">
-          <Link to="/admin/books" className="block">
-            <div className="font-serif text-3xl tracking-tight text-text-primary">
-              BucketList
-            </div>
-            <div className="mt-1 font-sans text-[0.68rem] uppercase tracking-[0.28em] text-text-muted">
-              Admin
-            </div>
-          </Link>
+        {/* Mobile menu overlay */}
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/50 md:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
+        <aside
+          className={`fixed inset-y-0 left-0 z-50 transform ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} md:relative md:translate-x-0 transition-transform duration-300 ease-in-out flex h-screen w-60 flex-col border-r border-black/10 bg-[#fbf8f2] px-6 py-8`}
+        >
+          <div className="flex items-center justify-between">
+            <Link
+              to="/admin/books"
+              className="block"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <div className="font-serif text-3xl tracking-tight text-text-primary">
+                BucketList
+              </div>
+              <div className="mt-1 font-sans text-[0.68rem] uppercase tracking-[0.28em] text-text-muted">
+                Admin
+              </div>
+            </Link>
+            <button
+              className="md:hidden p-2 -mr-2 text-text-muted"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <X size={20} />
+            </button>
+          </div>
 
           <nav className="mt-12 flex-1 space-y-2 overflow-y-auto pr-1">
             {navItems.map((item) => {
@@ -137,14 +163,20 @@ export default function AdminLayout() {
           </div>
         </aside>
 
-        <div className="flex h-screen flex-1 flex-col overflow-hidden">
-          <header className="sticky top-0 z-10 border-b border-black/10 bg-[#f8f4ee]/90 px-8 py-6 backdrop-blur-sm">
-            <h1 className="font-serif text-3xl tracking-tight text-text-primary">
+        <div className="flex h-screen flex-1 flex-col overflow-hidden w-full">
+          <header className="sticky top-0 z-10 flex w-full items-center gap-4 border-b border-black/10 bg-[#f8f4ee]/90 px-4 md:px-8 py-4 md:py-6 backdrop-blur-sm">
+            <button
+              className="md:hidden p-2 -ml-2 text-text-primary"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <Menu size={24} />
+            </button>
+            <h1 className="font-serif text-2xl md:text-3xl tracking-tight text-text-primary">
               {currentNavItem.title}
             </h1>
           </header>
 
-          <main className="min-h-0 flex-1 overflow-hidden p-8">
+          <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8">
             <Outlet />
           </main>
         </div>

@@ -11,6 +11,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
+import logoUrl from "../../assets/logo.png";
+
 import { logout as logoutApi } from "../../api/auth.api";
 import { getCart } from "../../api/cart.api";
 import { useAuthStore } from "../../store/auth.store";
@@ -114,17 +116,17 @@ export default function StorefrontLayout() {
   };
 
   return (
-    <div className="flex min-h-screen bg-bg-outer font-sans text-text-primary">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 z-40 flex h-screen w-20 flex-col items-center border-r border-border bg-bg-card py-8">
+    <div className="flex min-h-screen bg-bg-outer font-sans text-text-primary pb-18 md:pb-0">
+      {/* Sidebar / Bottom Nav */}
+      <aside className="fixed bottom-0 md:top-0 left-0 z-40 flex h-18 md:h-screen w-full md:w-20 flex-row md:flex-col items-center border-t md:border-t-0 md:border-r border-border bg-bg-card md:py-8 px-2 md:px-0">
         <Link
           to="/"
-          className="mb-12 cursor-pointer font-serif text-3xl font-bold tracking-tighter transition-opacity hover:opacity-80"
+          className="hidden md:block mb-12 cursor-pointer font-serif text-3xl font-bold tracking-tighter transition-opacity hover:opacity-80"
         >
           B.
         </Link>
 
-        <nav className="flex flex-1 flex-col gap-6">
+        <nav className="flex flex-1 md:flex-none flex-row md:flex-col justify-around w-full md:w-auto gap-1 md:gap-6">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive =
@@ -136,16 +138,20 @@ export default function StorefrontLayout() {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`relative flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl transition-all duration-200 ${
+                className={`relative flex h-10 w-10 md:h-12 md:w-12 cursor-pointer items-center justify-center rounded-xl md:rounded-2xl transition-all duration-200 ${
                   isActive
                     ? "bg-text-primary text-white shadow-lg shadow-black/10"
                     : "text-text-muted hover:bg-bg-outer hover:text-text-primary"
                 }`}
                 title={item.name}
               >
-                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                <Icon
+                  size={20}
+                  className="md:w-5.5 md:h-5.5"
+                  strokeWidth={isActive ? 2.5 : 2}
+                />
                 {item.hasBadge && cartItemCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-bg-card bg-accent text-[10px] font-bold text-white">
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 md:h-5 md:w-5 items-center justify-center rounded-full border-2 border-bg-card bg-accent text-[9px] md:text-[10px] font-bold text-white">
                     {cartItemCount}
                   </span>
                 )}
@@ -156,27 +162,31 @@ export default function StorefrontLayout() {
       </aside>
 
       {/* Main Content Wrapper */}
-      <div className="ml-20 flex flex-1 flex-col">
+      <div className="md:ml-20 flex flex-1 flex-col">
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 flex h-24 items-center justify-between border-b border-border bg-bg-outer/90 px-8 backdrop-blur-md">
-          <div className="w-84" />
+        <header className="sticky top-0 z-30 flex flex-col md:flex-row min-h-20 md:h-24 py-3 md:py-0 items-center justify-between border-b border-border bg-bg-outer/90 px-4 md:px-8 backdrop-blur-md gap-3 md:gap-0">
+          <div className="hidden md:block md:w-84" />
 
           <div className="flex flex-col items-center text-center">
-            <div className="flex items-center gap-3">
-              <span className="h-px w-8 bg-black/10" />
-              <p className="text-[0.62rem] uppercase tracking-[0.42em] text-text-muted">
+            <div className="flex items-center gap-2 md:gap-3">
+              <span className="hidden md:block h-px w-8 bg-black/10" />
+              <p className="text-[0.55rem] md:text-[0.62rem] uppercase tracking-[0.3em] md:tracking-[0.42em] text-text-muted">
                 Independent Bookstore
               </p>
-              <span className="h-px w-8 bg-black/10" />
+              <span className="hidden md:block h-px w-8 bg-black/10" />
             </div>
-            <h1 className="mt-2 font-serif text-[1.9rem] tracking-[-0.03em] text-text-primary">
-              BucketList Books
-            </h1>
+            <Link to="/" className="mt-1 md:mt-2 flex justify-center">
+              <img
+                src={logoUrl}
+                alt="BucketList Books"
+                className="h-7 md:h-10 w-auto object-contain"
+              />
+            </Link>
           </div>
 
           {/* Top Bar Actions */}
-          <div className="flex w-84 items-center justify-end gap-4">
-            <label className="relative block w-full max-w-56">
+          <div className="flex w-full md:w-84 items-center justify-between md:justify-end gap-2 md:gap-4">
+            <label className="relative block w-full md:max-w-56">
               <span className="sr-only">Search books</span>
               <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                 <Search className="h-4 w-4 text-text-muted" />
@@ -194,7 +204,7 @@ export default function StorefrontLayout() {
             {user?.role === "ADMIN" ? (
               <Link
                 to="/admin"
-                className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border border-black/10 bg-[#f8f4ee] px-4 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
+                className="hidden md:inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border border-black/10 bg-[#f8f4ee] px-4 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
               >
                 <LayoutDashboard size={16} />
                 Admin
@@ -236,11 +246,20 @@ export default function StorefrontLayout() {
                         {user.email}
                       </p>
 
+                      <Link
+                        to="/orders"
+                        onClick={() => setIsProfileOpen(false)}
+                        className="mt-5 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-black/10 bg-[#f8f4ee] px-4 py-3 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
+                      >
+                        <Receipt size={16} />
+                        My Orders
+                      </Link>
+
                       {user.role === "ADMIN" ? (
                         <Link
                           to="/admin"
                           onClick={() => setIsProfileOpen(false)}
-                          className="mt-5 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-black/10 bg-[#f8f4ee] px-4 py-3 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
+                          className="mt-3 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-black/10 bg-[#f8f4ee] px-4 py-3 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
                         >
                           <LayoutDashboard size={16} />
                           Open Admin Dashboard
@@ -294,7 +313,7 @@ export default function StorefrontLayout() {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-8">
+        <main className="flex-1 p-4 md:p-8">
           <Outlet />
         </main>
       </div>

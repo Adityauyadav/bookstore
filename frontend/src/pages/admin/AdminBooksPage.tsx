@@ -92,7 +92,14 @@ export default function AdminBooksPage() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      if (!form.title || !form.author || !form.isbn || !form.price || !form.genreId || !form.stock) {
+      if (
+        !form.title ||
+        !form.author ||
+        !form.isbn ||
+        !form.price ||
+        !form.genreId ||
+        !form.stock
+      ) {
         throw new Error("Please complete all required fields.");
       }
 
@@ -163,10 +170,10 @@ export default function AdminBooksPage() {
   );
 
   return (
-    <div className="grid h-full min-h-0 gap-6 xl:grid-cols-[minmax(0,1.35fr)_24rem]">
-      <section className="flex min-h-0 flex-col gap-6">
+    <div className="flex flex-col xl:grid xl:h-full min-h-0 gap-6 xl:grid-cols-[minmax(0,1.35fr)_24rem]">
+      <section className="flex xl:min-h-0 flex-col gap-6">
         <div className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-[1.5rem] border border-black/8 bg-[#fbf8f2] p-5">
+          <div className="rounded-3xl border border-black/8 bg-[#fbf8f2] p-5">
             <p className="text-[0.68rem] uppercase tracking-[0.22em] text-text-muted">
               Inventory
             </p>
@@ -174,7 +181,7 @@ export default function AdminBooksPage() {
               {inventorySummary.totalBooks}
             </p>
           </div>
-          <div className="rounded-[1.5rem] border border-black/8 bg-[#fbf8f2] p-5">
+          <div className="rounded-3xl border border-black/8 bg-[#fbf8f2] p-5">
             <p className="text-[0.68rem] uppercase tracking-[0.22em] text-text-muted">
               Low stock
             </p>
@@ -182,7 +189,7 @@ export default function AdminBooksPage() {
               {inventorySummary.lowStock}
             </p>
           </div>
-          <div className="rounded-[1.5rem] border border-black/8 bg-[#fbf8f2] p-5">
+          <div className="rounded-3xl border border-black/8 bg-[#fbf8f2] p-5">
             <p className="text-[0.68rem] uppercase tracking-[0.22em] text-text-muted">
               Genres
             </p>
@@ -221,70 +228,68 @@ export default function AdminBooksPage() {
           </div>
 
           <div className="mt-7 min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
-            {isLoading ? (
-              Array.from({ length: 4 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="h-28 animate-pulse rounded-[1.25rem] bg-white"
-                />
-              ))
-            ) : (
-              books.map((book) => (
-                <article
-                  key={book.id}
-                  className="grid gap-4 rounded-[1.25rem] border border-black/8 bg-white p-4 md:grid-cols-[4.5rem_minmax(0,1fr)_auto]"
-                >
-                  <img
-                    src={book.coverImageUrl}
-                    alt={book.title}
-                    className="aspect-[3/4] w-[4.5rem] rounded-[0.9rem] object-cover"
+            {isLoading
+              ? Array.from({ length: 4 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="h-28 animate-pulse rounded-[1.25rem] bg-white"
                   />
-                  <div className="min-w-0">
-                    <p className="font-serif text-2xl text-text-primary">
-                      {book.title}
-                    </p>
-                    <p className="mt-1 text-sm text-text-muted">
-                      {book.author} · {book.genre?.name ?? "Uncategorised"}
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-3 text-sm text-text-muted">
-                      <span>{formatPrice(Number(book.price))}</span>
-                      <span>Stock {book.stock}</span>
-                      <span className="truncate">ISBN {book.isbn}</span>
+                ))
+              : books.map((book) => (
+                  <article
+                    key={book.id}
+                    className="grid gap-4 rounded-[1.25rem] border border-black/8 bg-white p-4 md:grid-cols-[4.5rem_minmax(0,1fr)_auto]"
+                  >
+                    <img
+                      src={book.coverImageUrl}
+                      alt={book.title}
+                      className="aspect-3/4 w-18 rounded-[0.9rem] object-cover"
+                    />
+                    <div className="min-w-0">
+                      <p className="font-serif text-2xl text-text-primary">
+                        {book.title}
+                      </p>
+                      <p className="mt-1 text-sm text-text-muted">
+                        {book.author} · {book.genre?.name ?? "Uncategorised"}
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-3 text-sm text-text-muted">
+                        <span>{formatPrice(Number(book.price))}</span>
+                        <span>Stock {book.stock}</span>
+                        <span className="truncate">ISBN {book.isbn}</span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-2 md:flex-col">
-                    <button
-                      type="button"
-                      onClick={() => handleEdit(book)}
-                      className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-[#f8f4ee] px-3 py-2 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
-                    >
-                      <Pencil size={14} />
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const shouldDelete = window.confirm(
-                          `Delete "${book.title}" from the catalog?`,
-                        );
+                    <div className="flex items-start gap-2 md:flex-col">
+                      <button
+                        type="button"
+                        onClick={() => handleEdit(book)}
+                        className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-[#f8f4ee] px-3 py-2 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
+                      >
+                        <Pencil size={14} />
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const shouldDelete = window.confirm(
+                            `Delete "${book.title}" from the catalog?`,
+                          );
 
-                        if (!shouldDelete) {
-                          return;
-                        }
+                          if (!shouldDelete) {
+                            return;
+                          }
 
-                        setFormError("");
-                        deleteMutation.mutate(book.id);
-                      }}
-                      disabled={deleteMutation.isPending}
-                      className="inline-flex items-center gap-2 rounded-full border border-[#8f2d22]/15 bg-[#f8ece8] px-3 py-2 text-sm text-[#8f2d22] transition-all hover:-translate-y-0.5"
-                    >
-                      <Trash2 size={14} />
-                      Delete
-                    </button>
-                  </div>
-                </article>
-              ))
-            )}
+                          setFormError("");
+                          deleteMutation.mutate(book.id);
+                        }}
+                        disabled={deleteMutation.isPending}
+                        className="inline-flex items-center gap-2 rounded-full border border-[#8f2d22]/15 bg-[#f8ece8] px-3 py-2 text-sm text-[#8f2d22] transition-all hover:-translate-y-0.5"
+                      >
+                        <Trash2 size={14} />
+                        Delete
+                      </button>
+                    </div>
+                  </article>
+                ))}
           </div>
         </div>
       </section>
@@ -354,7 +359,10 @@ export default function AdminBooksPage() {
             <input
               value={form.price}
               onChange={(event) =>
-                setForm((current) => ({ ...current, price: event.target.value }))
+                setForm((current) => ({
+                  ...current,
+                  price: event.target.value,
+                }))
               }
               placeholder="Price"
               className="h-11 w-full rounded-2xl border border-black/10 bg-white px-4 text-sm outline-none transition-all focus:border-black/20 focus:shadow-sm"
@@ -362,7 +370,10 @@ export default function AdminBooksPage() {
             <input
               value={form.stock}
               onChange={(event) =>
-                setForm((current) => ({ ...current, stock: event.target.value }))
+                setForm((current) => ({
+                  ...current,
+                  stock: event.target.value,
+                }))
               }
               placeholder="Stock"
               className="h-11 w-full rounded-2xl border border-black/10 bg-white px-4 text-sm outline-none transition-all focus:border-black/20 focus:shadow-sm"

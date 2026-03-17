@@ -41,7 +41,7 @@ export default function BookCard({
           handleOpenBook();
         }
       }}
-      className="group flex h-full max-w-48 cursor-pointer flex-col overflow-hidden bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(42,30,18,0.08)] focus:outline-none focus:ring-2 focus:ring-black/15"
+      className="group flex h-full w-full sm:max-w-48 cursor-pointer flex-col overflow-hidden bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(42,30,18,0.08)] focus:outline-none focus:ring-2 focus:ring-black/15"
     >
       <div className="relative block overflow-hidden bg-[#efe6d8]">
         <img

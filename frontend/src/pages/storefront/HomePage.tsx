@@ -214,7 +214,7 @@ export default function HomePage() {
 
             <Link
               to="/admin"
-              className="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-[#1d1a17] transition-all hover:-translate-y-0.5 hover:bg-[#f4efe7]"
+              className="inline-flex w-full md:w-auto items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-[#1d1a17] transition-all hover:-translate-y-0.5 hover:bg-[#f4efe7]"
             >
               Go to Admin Dashboard
             </Link>
@@ -223,22 +223,22 @@ export default function HomePage() {
       ) : null}
 
       <section className="overflow-hidden rounded-3xl border border-black/10 bg-[#fbf8f2]">
-        <div className="px-5 py-7 sm:px-6 lg:px-8 lg:py-8">
-          <div className="max-w-2xl">
+        <div className="px-5 py-7 sm:px-6 lg:px-8 lg:py-8 text-center md:text-left">
+          <div className="max-w-2xl mx-auto md:mx-0">
             <p className="font-sans text-[0.72rem] uppercase tracking-[0.34em] text-text-muted">
               Curated Storefront
             </p>
-            <h1 className="mt-3 max-w-3xl font-serif text-3xl leading-none tracking-tight text-text-primary sm:text-[2.7rem] xl:text-[3.4rem]">
+            <h1 className="mt-3 max-w-3xl font-serif text-[2rem] leading-none tracking-tight text-text-primary sm:text-[2.7rem] xl:text-[3.4rem]">
               Your next read is waiting.
             </h1>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-text-muted sm:text-base">
+            <p className="mt-4 max-w-xl text-sm leading-6 mx-auto md:mx-0 text-text-muted sm:text-base">
               Explore curated books across every genre.
             </p>
 
             <button
               type="button"
               onClick={handleBrowseClick}
-              className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#1d1a17] px-4 py-2.5 text-sm font-medium tracking-[0.08em] text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-black"
+              className="mt-6 md:mt-5 inline-flex w-full md:w-auto justify-center items-center gap-2 rounded-full bg-[#1d1a17] px-4 py-2.5 text-sm font-medium tracking-[0.08em] text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-black"
             >
               Browse all books
               <ArrowRight size={16} />
@@ -250,10 +250,10 @@ export default function HomePage() {
       <section
         id="books-grid"
         ref={booksSectionRef}
-        className="space-y-5 rounded-3xl border border-black/8 bg-[#fbf8f2] px-5 py-5 sm:px-6 lg:px-7"
+        className="space-y-5 rounded-3xl border border-black/8 bg-[#fbf8f2] px-4 py-5 sm:px-6 lg:px-7"
       >
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
+          <div className="text-center lg:text-left">
             <p className="font-sans text-[0.72rem] uppercase tracking-[0.32em] text-text-muted">
               Browse Collection
             </p>
@@ -262,22 +262,22 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div className="flex items-center justify-start gap-2 lg:min-w-40">
+          <div className="flex items-center justify-center lg:justify-start gap-2 w-full lg:w-auto lg:min-w-40">
             <button
               type="button"
               onClick={focusTopSearch}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
+              className="inline-flex flex-1 lg:flex-none h-11 w-11 lg:w-11 items-center justify-center rounded-xl lg:rounded-full border border-black/10 bg-white text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
               aria-label="Jump to search"
               title="Search"
             >
               <Search size={16} />
             </button>
 
-            <div className="relative">
+            <div className="relative flex-1 lg:flex-none">
               <button
                 type="button"
                 onClick={() => setIsFiltersOpen((current) => !current)}
-                className="inline-flex h-11 items-center gap-2 rounded-xl border border-black/10 bg-white px-4 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
+                className="inline-flex w-full lg:w-auto h-11 items-center justify-center gap-2 rounded-xl border border-black/10 bg-white px-4 text-sm text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
               >
                 <SlidersHorizontal size={16} />
                 Filters
@@ -289,7 +289,7 @@ export default function HomePage() {
               </button>
 
               {isFiltersOpen ? (
-                <div className="absolute right-0 top-[calc(100%+0.75rem)] z-20 w-[20rem] rounded-[1.25rem] border border-black/10 bg-white p-4 shadow-[0_20px_50px_rgba(42,30,18,0.12)]">
+                <div className="absolute right-0 left-0 lg:left-auto top-[calc(100%+0.75rem)] z-20 w-full lg:w-[20rem] rounded-[1.25rem] border border-black/10 bg-white p-4 shadow-[0_20px_50px_rgba(42,30,18,0.12)]">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-[0.68rem] uppercase tracking-[0.22em] text-text-muted">
@@ -368,7 +368,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2.5">
+        <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
           <button
             type="button"
             onClick={() => handleGenreChange("")}
@@ -397,7 +397,7 @@ export default function HomePage() {
         </div>
 
         {booksLoading ? (
-          <div className="grid gap-x-2.5 gap-y-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7">
+          <div className="grid gap-x-2.5 gap-y-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7">
             {Array.from({ length: 10 }).map((_, index) => (
               <div
                 key={index}
@@ -407,7 +407,7 @@ export default function HomePage() {
           </div>
         ) : visibleBooks.length > 0 ? (
           <>
-            <div className="grid gap-x-2.5 gap-y-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7">
+            <div className="grid gap-x-2.5 gap-y-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7">
               {visibleBooks.map((book) => (
                 <BookCard
                   key={book.id}
