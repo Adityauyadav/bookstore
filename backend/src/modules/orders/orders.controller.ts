@@ -87,11 +87,24 @@ export const getAdminOrdersList: RequestHandler = async (req, res, next) => {
     const limit = Number(req.query.limit ?? 10);
     const status =
       typeof req.query.status === "string" ? req.query.status : undefined;
+    const userId =
+      typeof req.query.userId === "string" ? req.query.userId : undefined;
+    const dateFrom =
+      typeof req.query.dateFrom === "string"
+        ? new Date(req.query.dateFrom)
+        : undefined;
+    const dateTo =
+      typeof req.query.dateTo === "string"
+        ? new Date(req.query.dateTo)
+        : undefined;
 
     const orders = await getAdminOrders(
       page,
       limit,
       status as "PENDING" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED" | undefined,
+      userId,
+      dateFrom && !Number.isNaN(dateFrom.getTime()) ? dateFrom : undefined,
+      dateTo && !Number.isNaN(dateTo.getTime()) ? dateTo : undefined,
     );
 
     res.status(200).json({

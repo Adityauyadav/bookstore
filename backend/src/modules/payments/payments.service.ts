@@ -50,15 +50,41 @@ export const verifyPayment = async (
     .digest("hex");
 
   if (expectedSignature !== razorpaySignature) {
-    await prisma.payment.update({
-      where: {
-        id: payment.id,
-      },
-      data: {
-        status: "FAILED",
-        razorpayPaymentId,
-        razorpaySignature,
-      },
+    await prisma.$transaction(async (tx) => {
+      await tx.payment.update({
+        where: {
+          id: payment.id,
+        },
+        data: {
+          status: "FAILED",
+          razorpayPaymentId,
+          razorpaySignature,
+        },
+      });
+
+      if (payment.order.status !== "CANCELLED") {
+        for (const item of payment.order.items) {
+          await tx.book.update({
+            where: {
+              id: item.bookId,
+            },
+            data: {
+              stock: {
+                increment: item.quantity,
+              },
+            },
+          });
+        }
+
+        await tx.order.update({
+          where: {
+            id: payment.orderId,
+          },
+          data: {
+            status: "CANCELLED",
+          },
+        });
+      }
     });
 
     throw new AppError(

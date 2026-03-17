@@ -233,6 +233,15 @@ export const cancelOrder = async (userId: string, orderId: string) => {
       });
     }
 
+    await tx.payment.updateMany({
+      where: {
+        orderId,
+      },
+      data: {
+        status: "FAILED",
+      },
+    });
+
     return tx.order.update({
       where: {
         id: orderId,
@@ -264,11 +273,30 @@ export const getAdminOrders = async (
   page: number,
   limit: number,
   status?: "PENDING" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED",
+  userId?: string,
+  dateFrom?: Date,
+  dateTo?: Date,
 ) => {
   const where: Prisma.OrderWhereInput = {};
 
   if (status) {
     where.status = status;
+  }
+
+  if (userId) {
+    where.userId = userId;
+  }
+
+  if (dateFrom || dateTo) {
+    where.createdAt = {};
+
+    if (dateFrom) {
+      where.createdAt.gte = dateFrom;
+    }
+
+    if (dateTo) {
+      where.createdAt.lte = dateTo;
+    }
   }
 
   const [orders, total] = await prisma.$transaction([

@@ -6,6 +6,7 @@ import AdminLayout from "../components/layout/AdminLayout";
 import StorefrontLayout from "../components/layout/StorefrontLayout";
 import { getMe, refreshToken } from "../api/auth.api";
 import AdminBooksPage from "../pages/admin/AdminBooksPage";
+import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
 import AdminGenresPage from "../pages/admin/AdminGenresPage";
 import AdminOrdersPage from "../pages/admin/AdminOrdersPage";
 import AdminUsersPage from "../pages/admin/AdminUsersPage";
@@ -122,7 +123,7 @@ export default function AppRouter() {
 
         <Route element={<AdminRoute />}>
           <Route element={<AdminLayout />}>
-            <Route path="/admin" element={<Navigate to="/admin/books" replace />} />
+            <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/admin/books" element={<AdminBooksPage />} />
             <Route path="/admin/orders" element={<AdminOrdersPage />} />
             <Route path="/admin/users" element={<AdminUsersPage />} />

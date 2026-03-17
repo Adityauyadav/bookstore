@@ -1,12 +1,13 @@
 import { ArrowRight, Search, SlidersHorizontal, X } from "lucide-react";
-import { useDeferredValue, useMemo, useRef, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { getBooks, getGenres } from "../../api/books.api";
-import { addToCart } from "../../api/cart.api";
+import { addToCart, getCart } from "../../api/cart.api";
 import BookCard from "../../components/ui/BookCard";
 import { useAuthStore } from "../../store/auth.store";
+import { Link } from "react-router-dom";
 
 const DEFAULT_LIMIT = 20;
 const MAX_PRICE = 5000;
@@ -19,7 +20,8 @@ const formatPrice = (value: number) =>
   }).format(value);
 
 export default function HomePage() {
-  const [search, setSearch] = useState("");
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get("q") ?? "");
   const [selectedGenre, setSelectedGenre] = useState<string>("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -30,17 +32,37 @@ export default function HomePage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
+
+  useEffect(() => {
+    const nextSearch = searchParams.get("q") ?? "";
+    setSearch((current) => {
+      if (
+        current.trim() === nextSearch.trim() &&
+        current.length > nextSearch.length
+      ) {
+        return current;
+      }
+      return current === nextSearch ? current : nextSearch;
+    });
+  }, [searchParams]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [deferredSearch]);
+
+  const { data: cartData } = useQuery({
+    queryKey: ["cart"],
+    queryFn: getCart,
+    enabled: isAuthenticated,
+  });
 
   const bookQueryParams = useMemo(
     () => ({
-      q: deferredSearch.trim() || undefined,
-      genre: selectedGenre || undefined,
-      minPrice: minPrice ? Number(minPrice) : undefined,
-      maxPrice: maxPrice ? Number(maxPrice) : undefined,
-      page,
-      limit: DEFAULT_LIMIT,
+      page: 1,
+      limit: 200,
     }),
-    [deferredSearch, selectedGenre, minPrice, maxPrice, page],
+    [],
   );
 
   const { data: genresData } = useQuery({
@@ -63,9 +85,44 @@ export default function HomePage() {
   });
 
   const books = booksData?.data?.books ?? [];
-  const totalPages = booksData?.data?.totalPages ?? 1;
-  const currentPage = booksData?.data?.page ?? page;
   const genres = genresData?.data ?? [];
+  const cartBookIds = new Set(
+    cartData?.data?.items.map((item) => item.bookId) ?? [],
+  );
+  const filteredBooks = useMemo(() => {
+    const normalizedQuery = deferredSearch.trim().toLowerCase();
+    const min = minPrice ? Number(minPrice) : undefined;
+    const max = maxPrice ? Number(maxPrice) : undefined;
+
+    return books.filter((book) => {
+      const matchesSearch =
+        !normalizedQuery ||
+        [
+          book.title,
+          book.author,
+          book.isbn,
+          book.description,
+          book.genre?.name,
+        ].some((value) => value?.toLowerCase().includes(normalizedQuery));
+
+      const matchesGenre = !selectedGenre || book.genre?.slug === selectedGenre;
+      const price = Number(book.price);
+      const matchesMin = min === undefined || price >= min;
+      const matchesMax = max === undefined || price <= max;
+
+      return matchesSearch && matchesGenre && matchesMin && matchesMax;
+    });
+  }, [books, deferredSearch, maxPrice, minPrice, selectedGenre]);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredBooks.length / DEFAULT_LIMIT),
+  );
+  const currentPage = Math.min(page, totalPages);
+  const visibleBooks = useMemo(() => {
+    const startIndex = (currentPage - 1) * DEFAULT_LIMIT;
+    return filteredBooks.slice(startIndex, startIndex + DEFAULT_LIMIT);
+  }, [currentPage, filteredBooks]);
 
   const handleBrowseClick = () => {
     booksSectionRef.current?.scrollIntoView({
@@ -74,13 +131,20 @@ export default function HomePage() {
     });
   };
 
-  const handleGenreChange = (genreSlug: string) => {
-    setSelectedGenre(genreSlug);
-    setPage(1);
+  const focusTopSearch = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    window.setTimeout(() => {
+      const input = document.getElementById(
+        "storefront-search",
+      ) as HTMLInputElement | null;
+
+      input?.focus();
+    }, 250);
   };
 
-  const handleSearchChange = (value: string) => {
-    setSearch(value);
+  const handleGenreChange = (genreSlug: string) => {
+    setSelectedGenre(genreSlug);
     setPage(1);
   };
 
@@ -131,14 +195,40 @@ export default function HomePage() {
   };
 
   return (
-    <div className="space-y-8 pb-8">
-      <section className="overflow-hidden rounded-[1.75rem] border border-black/10 bg-[#fbf8f2]">
-        <div className="grid gap-6 px-5 py-8 sm:px-7 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:px-10 lg:py-10">
+    <div className="space-y-6 pb-6">
+      {user?.role === "ADMIN" ? (
+        <section className="rounded-3xl border border-[#1d1a17]/10 bg-[linear-gradient(135deg,#1d1a17_0%,#3b342d_100%)] px-5 py-5 text-white sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-[0.68rem] uppercase tracking-[0.24em] text-white/65">
+                Admin Access
+              </p>
+              <h2 className="mt-2 font-serif text-[1.8rem] leading-tight">
+                Open the admin dashboard
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75">
+                Manage inventory, review orders, update fulfillment, and keep
+                the storefront running from one place.
+              </p>
+            </div>
+
+            <Link
+              to="/admin"
+              className="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-[#1d1a17] transition-all hover:-translate-y-0.5 hover:bg-[#f4efe7]"
+            >
+              Go to Admin Dashboard
+            </Link>
+          </div>
+        </section>
+      ) : null}
+
+      <section className="overflow-hidden rounded-3xl border border-black/10 bg-[#fbf8f2]">
+        <div className="grid gap-5 px-5 py-7 sm:px-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:px-8 lg:py-8">
           <div className="max-w-2xl">
             <p className="font-sans text-[0.72rem] uppercase tracking-[0.34em] text-text-muted">
               Curated Storefront
             </p>
-            <h1 className="mt-3 max-w-3xl font-serif text-4xl leading-none tracking-tight text-text-primary sm:text-5xl xl:text-6xl">
+            <h1 className="mt-3 max-w-3xl font-serif text-3xl leading-none tracking-tight text-text-primary sm:text-[2.7rem] xl:text-[3.4rem]">
               Your next read is waiting.
             </h1>
             <p className="mt-4 max-w-xl text-sm leading-6 text-text-muted sm:text-base">
@@ -148,7 +238,7 @@ export default function HomePage() {
             <button
               type="button"
               onClick={handleBrowseClick}
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#1d1a17] px-5 py-3 text-sm font-medium tracking-[0.08em] text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-black"
+              className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#1d1a17] px-4 py-2.5 text-sm font-medium tracking-[0.08em] text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-black"
             >
               Browse all books
               <ArrowRight size={16} />
@@ -156,11 +246,11 @@ export default function HomePage() {
           </div>
 
           <div className="grid gap-3 self-end sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-            <div className="rounded-[1.25rem] border border-black/8 bg-white px-4 py-5">
+            <div className="rounded-[1.1rem] border border-black/8 bg-white px-4 py-4">
               <p className="text-[0.68rem] uppercase tracking-[0.24em] text-text-muted">
                 Current filters
               </p>
-              <p className="mt-2 font-serif text-2xl text-text-primary">
+              <p className="mt-2 font-serif text-[1.45rem] text-text-primary">
                 {selectedGenre
                   ? (genres.find((genre) => genre.slug === selectedGenre)
                       ?.name ?? "Selected")
@@ -175,12 +265,12 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="rounded-[1.25rem] border border-[#8f2d22]/10 bg-[#f8ece8] px-4 py-5">
+            <div className="rounded-[1.1rem] border border-[#8f2d22]/10 bg-[#f8ece8] px-4 py-4">
               <p className="text-[0.68rem] uppercase tracking-[0.24em] text-[#8f2d22]/70">
                 Shelf count
               </p>
-              <p className="mt-2 font-serif text-2xl text-[#8f2d22]">
-                {booksData?.data?.total ?? 0}
+              <p className="mt-2 font-serif text-[1.45rem] text-[#8f2d22]">
+                {filteredBooks.length}
               </p>
               <p className="mt-2 text-sm leading-6 text-[#8f2d22]/80">
                 Titles available across the current search and filter set.
@@ -193,32 +283,28 @@ export default function HomePage() {
       <section
         id="books-grid"
         ref={booksSectionRef}
-        className="space-y-6 rounded-[1.75rem] border border-black/8 bg-[#fbf8f2] px-5 py-6 sm:px-7 lg:px-8"
+        className="space-y-5 rounded-3xl border border-black/8 bg-[#fbf8f2] px-5 py-5 sm:px-6 lg:px-7"
       >
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="font-sans text-[0.72rem] uppercase tracking-[0.32em] text-text-muted">
               Browse Collection
             </p>
-            <h2 className="mt-2 font-serif text-3xl text-text-primary">
+            <h2 className="mt-2 font-serif text-[1.9rem] text-text-primary">
               Find your next book
             </h2>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-[minmax(0,1.6fr)_auto] lg:min-w-152">
-            <label className="relative block">
-              <span className="sr-only">Search books</span>
-              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                <Search className="h-4 w-4 text-text-muted" />
-              </span>
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="Search books, authors, ISBN..."
-                className="h-11 w-full rounded-xl border border-black/10 bg-white pl-11 pr-4 text-sm text-text-primary outline-none transition-all placeholder:text-text-muted/70 focus:border-black/20 focus:shadow-sm"
-              />
-            </label>
+          <div className="flex items-center justify-start gap-2 lg:min-w-40">
+            <button
+              type="button"
+              onClick={focusTopSearch}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-text-primary transition-all hover:-translate-y-0.5 hover:border-black/20"
+              aria-label="Jump to search"
+              title="Search"
+            >
+              <Search size={16} />
+            </button>
 
             <div className="relative">
               <button
@@ -344,22 +430,23 @@ export default function HomePage() {
         </div>
 
         {booksLoading ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          <div className="grid gap-x-2.5 gap-y-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7">
             {Array.from({ length: 10 }).map((_, index) => (
               <div
                 key={index}
-                className="h-80 animate-pulse rounded-2xl bg-white/60"
+                className="h-72 animate-pulse rounded-[1.2rem] bg-white/60"
               />
             ))}
           </div>
-        ) : books.length > 0 ? (
+        ) : visibleBooks.length > 0 ? (
           <>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-              {books.map((book) => (
+            <div className="grid gap-x-2.5 gap-y-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7">
+              {visibleBooks.map((book) => (
                 <BookCard
                   key={book.id}
                   book={book}
                   onAddToCart={() => handleAddToCart(book.id)}
+                  isInCart={cartBookIds.has(book.id)}
                   isAddingToCart={
                     addToCartMutation.isPending &&
                     addToCartMutation.variables?.bookId === book.id
@@ -368,7 +455,7 @@ export default function HomePage() {
               ))}
             </div>
 
-            <div className="flex flex-col gap-4 border-t border-black/8 pt-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 border-t border-black/8 pt-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-text-muted">
                 Page {currentPage} of {totalPages}
               </p>
@@ -396,8 +483,8 @@ export default function HomePage() {
             </div>
           </>
         ) : (
-          <div className="rounded-3xl border border-dashed border-black/12 bg-white px-6 py-12 text-center">
-            <p className="font-serif text-2xl text-text-primary">
+          <div className="rounded-[1.35rem] border border-dashed border-black/12 bg-white px-6 py-10 text-center">
+            <p className="font-serif text-[1.7rem] text-text-primary">
               No books found
             </p>
             <p className="mt-3 text-sm text-text-muted">

@@ -17,6 +17,7 @@ cartRouter.get("/", getCart);
 cartRouter.post("/items", addItemToCart);
 cartRouter.patch("/items/:bookId", updateCartItemQuantity);
 cartRouter.delete("/items/:bookId", removeItemFromCart);
+cartRouter.delete("/", clearUserCart);
 cartRouter.delete("/clear", clearUserCart);
 
 export default cartRouter;

@@ -87,13 +87,9 @@ export const removeItemFromCart: RequestHandler<{ bookId: string }> = async (
   next,
 ) => {
   try {
-    const cart = await removeCartItem(getUserIdOrThrow(req.user?.id), req.params.bookId);
+    await removeCartItem(getUserIdOrThrow(req.user?.id), req.params.bookId);
 
-    res.status(200).json({
-      success: true,
-      message: "Cart item removed successfully",
-      data: cart,
-    });
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
@@ -101,13 +97,9 @@ export const removeItemFromCart: RequestHandler<{ bookId: string }> = async (
 
 export const clearUserCart: RequestHandler = async (req, res, next) => {
   try {
-    const cart = await clearCart(getUserIdOrThrow(req.user?.id));
+    await clearCart(getUserIdOrThrow(req.user?.id));
 
-    res.status(200).json({
-      success: true,
-      message: "Cart cleared successfully",
-      data: cart,
-    });
+    res.status(204).send();
   } catch (error) {
     next(error);
   }

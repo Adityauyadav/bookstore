@@ -1,4 +1,11 @@
-import { BookOpen, Layers3, LogOut, Receipt, Users } from "lucide-react";
+import {
+  BookOpen,
+  LayoutDashboard,
+  Layers3,
+  LogOut,
+  Receipt,
+  Users,
+} from "lucide-react";
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
@@ -7,28 +14,39 @@ import { useAuthStore } from "../../store/auth.store";
 
 const navItems = [
   {
+    label: "Dashboard",
+    path: "/admin",
+    icon: LayoutDashboard,
+    title: "Dashboard",
+    exact: true,
+  },
+  {
     label: "Books",
     path: "/admin/books",
     icon: BookOpen,
     title: "Books",
+    exact: false,
   },
   {
     label: "Orders",
     path: "/admin/orders",
     icon: Receipt,
     title: "Orders",
+    exact: false,
   },
   {
     label: "Users",
     path: "/admin/users",
     icon: Users,
     title: "Users",
+    exact: false,
   },
   {
     label: "Genres",
     path: "/admin/genres",
     icon: Layers3,
     title: "Genres",
+    exact: false,
   },
 ] as const;
 
@@ -40,7 +58,9 @@ export default function AdminLayout() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const currentNavItem =
-    navItems.find((item) => location.pathname.startsWith(item.path)) ??
+    navItems.find((item) =>
+      item.exact ? location.pathname === item.path : location.pathname.startsWith(item.path),
+    ) ??
     navItems[0];
 
   const handleLogout = async () => {
@@ -62,9 +82,9 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f1ea] text-text-primary">
-      <div className="flex min-h-screen">
-        <aside className="flex w-55 flex-col border-r border-black/10 bg-[#fbf8f2] px-6 py-8">
+    <div className="h-screen overflow-hidden bg-[#f5f1ea] text-text-primary">
+      <div className="flex h-screen">
+        <aside className="sticky top-0 flex h-screen w-[220px] flex-col border-r border-black/10 bg-[#fbf8f2] px-6 py-8">
           <Link to="/admin/books" className="block">
             <div className="font-serif text-3xl tracking-tight text-text-primary">
               BucketList
@@ -74,10 +94,12 @@ export default function AdminLayout() {
             </div>
           </Link>
 
-          <nav className="mt-12 flex flex-1 flex-col gap-2">
+          <nav className="mt-12 flex-1 space-y-2 overflow-y-auto pr-1">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname.startsWith(item.path);
+              const isActive = item.exact
+                ? location.pathname === item.path
+                : location.pathname.startsWith(item.path);
 
               return (
                 <Link
@@ -115,14 +137,14 @@ export default function AdminLayout() {
           </div>
         </aside>
 
-        <div className="flex min-h-screen flex-1 flex-col">
-          <header className="border-b border-black/10 bg-[#f8f4ee]/90 px-8 py-6 backdrop-blur-sm">
+        <div className="flex h-screen flex-1 flex-col overflow-hidden">
+          <header className="sticky top-0 z-10 border-b border-black/10 bg-[#f8f4ee]/90 px-8 py-6 backdrop-blur-sm">
             <h1 className="font-serif text-3xl tracking-tight text-text-primary">
               {currentNavItem.title}
             </h1>
           </header>
 
-          <main className="flex-1 p-8">
+          <main className="min-h-0 flex-1 overflow-hidden p-8">
             <Outlet />
           </main>
         </div>

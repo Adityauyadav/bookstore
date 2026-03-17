@@ -69,36 +69,38 @@ export const getAllBooks = async (query: Partial<GetBooksQueryInput> = {}) => {
 
   const where: Prisma.BookWhereInput = {};
 
-  if (q) {
+  if (q?.trim()) {
+    const searchValue = q.trim();
+
     where.OR = [
       {
         title: {
-          contains: q,
+          contains: searchValue,
           mode: "insensitive",
         },
       },
       {
         author: {
-          contains: q,
+          contains: searchValue,
           mode: "insensitive",
         },
       },
       {
         isbn: {
-          contains: q,
+          contains: searchValue,
           mode: "insensitive",
         },
       },
       {
         description: {
-          contains: q,
+          contains: searchValue,
           mode: "insensitive",
         },
       },
       {
         genre: {
           name: {
-            contains: q,
+            contains: searchValue,
             mode: "insensitive",
           },
         },
@@ -272,6 +274,23 @@ export const updateBook = async (
 
 export const deleteBook = async (id: string) => {
   const existingBook = await getBookOrThrow(id);
+
+  const [cartItemCount, orderItemCount] = await prisma.$transaction([
+    prisma.cartItem.count({
+      where: { bookId: id },
+    }),
+    prisma.orderItem.count({
+      where: { bookId: id },
+    }),
+  ]);
+
+  if (cartItemCount > 0 || orderItemCount > 0) {
+    throw new AppError(
+      "Cannot delete a book that is present in carts or orders",
+      400,
+      "BOOK_IN_USE",
+    );
+  }
 
   await prisma.book.delete({
     where: { id },

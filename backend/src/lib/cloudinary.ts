@@ -46,6 +46,11 @@ export const uploadImage = async (file: MulterFileLike) => {
 };
 
 export const deleteImage = async (publicId: string) => {
+  // Seeded demo books use Open Library covers and are not Cloudinary assets.
+  if (!publicId || publicId.startsWith("openlibrary_")) {
+    return;
+  }
+
   await cloudinary.uploader.destroy(publicId);
 };
 

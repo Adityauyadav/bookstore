@@ -18,33 +18,56 @@ import {
 } from "./books.schema";
 
 const booksRouter = Router();
+export const adminBooksRouter = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 booksRouter.get("/", listBooks);
 booksRouter.get("/:id", getBook);
+
+const adminBookMiddlewares = [authMiddleware, requireAdmin] as const;
+
 booksRouter.post(
   "/",
-  authMiddleware,
-  requireAdmin,
+  ...adminBookMiddlewares,
   upload.single("coverImage"),
   validate(createBookSchema),
   createBook,
 );
 booksRouter.patch(
   "/:id",
-  authMiddleware,
-  requireAdmin,
+  ...adminBookMiddlewares,
   upload.single("coverImage"),
   validate(updateBookSchema),
   updateBook,
 );
 booksRouter.patch(
   "/:id/stock",
-  authMiddleware,
-  requireAdmin,
+  ...adminBookMiddlewares,
   validate(updateStockSchema),
   updateBookStock,
 );
-booksRouter.delete("/:id", authMiddleware, requireAdmin, deleteBook);
+booksRouter.delete("/:id", ...adminBookMiddlewares, deleteBook);
+
+adminBooksRouter.use(...adminBookMiddlewares);
+adminBooksRouter.post(
+  "/",
+  upload.single("coverImage"),
+  validate(createBookSchema),
+  createBook,
+);
+adminBooksRouter.put(
+  "/:id",
+  upload.single("coverImage"),
+  validate(updateBookSchema),
+  updateBook,
+);
+adminBooksRouter.patch(
+  "/:id",
+  upload.single("coverImage"),
+  validate(updateBookSchema),
+  updateBook,
+);
+adminBooksRouter.patch("/:id/stock", validate(updateStockSchema), updateBookStock);
+adminBooksRouter.delete("/:id", deleteBook);
 
 export default booksRouter;
