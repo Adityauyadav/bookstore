@@ -236,7 +236,7 @@ The collection:
 
 To test payments in Razorpay test mode use:
 
-- Card: `4111 1111 1111 1111`
+- Card: `4100 2800 0000 1007`
 - Expiry: any future date
 - CVV: any 3 digits
 - OTP: `1234`
