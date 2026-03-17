@@ -41,14 +41,14 @@ const cookieParser: RequestHandler = (req, res, next) => {
 app.use(helmet());
 app.use(
   cors({
-    origin: true,
+    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
     credentials: true,
   }),
 );
 app.use(cookieParser);
 app.use(express.json());
 app.use(pinoHttp({ logger }));
-// app.use(globalRateLimiter); // Disabled for now
+app.use(globalRateLimiter);
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
